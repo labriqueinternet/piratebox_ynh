@@ -1,0 +1,211 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides: ynh-piratebox
+# Required-Start:    $network $remote_fs $syslog $all
+# Required-Stop:     $network $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Set prerequisites for wifi piratebox.
+# Description:       Set prerequisites for wifi piratebox.
+### END INIT INFO
+
+# PirateBox app for YunoHost 
+# Copyright (C) 2015 Julien Vaubourg <julien@vaubourg.com>
+# Contribute at https://github.com/jvaubourg/piratebox_ynh
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+# 
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# Functions
+## State functions
+
+has_hotspot_app() {
+  [ -e /tmp/.ynh-hotspot-started ]
+}
+
+is_nat4_dns_set() {
+  iptables -nvt nat -L PREROUTING | grep 'udp dpt:53' | grep -q "${ynh_wifi_device}" \
+  && iptables -nvt nat -L POSTROUTING | grep MASQUERADE | grep -q "${ynh_wifi_device}"
+}
+
+is_nat4_web_set() {
+  iptables -nvt nat -L PREROUTING | grep 'tcp dpt:80' | grep -q "${ynh_wifi_device}"
+}
+
+is_fakedns_running() {
+  ps aux | grep -v grep | grep -q piratebox_fakedns
+}
+
+is_running() {
+  has_hotspot_app \
+  && is_nat4_dns_set && is_nat4_web_set \
+  && is_fakedns_running
+}
+
+## Setters
+
+# The IPv6 NAT features are not available available before the kernel 3.8
+# therefore the IPv6-compliance will be add when Debian Stable has a
+# compliant kernel
+
+set_nat4_dns() {
+  iptables -t nat -A PREROUTING -i "${ynh_wifi_device}" -p udp --dport 53 -j DNAT --to-destination "${ynh_ip4_nat_prefix}.1:4253"
+  iptables -t nat -A POSTROUTING -o "${ynh_wifi_device}" -j MASQUERADE
+}
+
+set_nat4_web() {
+  iptables -t nat -A PREROUTING -i "${ynh_wifi_device}" -p tcp --dport 80 -j REDIRECT --to-port 4280
+}
+
+start_fakedns() {
+  /usr/local/bin/piratebox_fakedns "${ynh_ip4_nat_prefix}.1" 2>&1 > /dev/null &
+}
+
+## Unsetters
+
+unset_nat4_dns() {
+  iptables -t nat -D PREROUTING -i "${ynh_wifi_device}" -p udp --dport 53 -j DNAT --to-destination "${ynh_ip4_nat_prefix}.1:4253"
+  iptables -t nat -D POSTROUTING -o "${ynh_wifi_device}" -j MASQUERADE
+}
+
+unset_nat4_web() {
+  iptables -t nat -D PREROUTING -i "${ynh_wifi_device}" -p tcp --dport 80 -j REDIRECT --to-port 4280
+}
+
+stop_fakedns() {
+  kill $(ps aux | grep piratebox_fakedns | awk '{ print $2 }' | head -n1)
+}
+
+## Tools
+
+moulinette_hotspot_get() {
+  var=${1}
+
+  value=$(yunohost app setting hotspot "${var}")
+
+  if [[ "${value}" =~ "An instance is already running" ]]; then
+    echo "${value}" >&2
+    exit 1
+  fi
+
+  echo "${value}"
+}
+
+if [ "$1" != restart ]; then
+
+  # Restart php5-fpm at the first start (it needs to be restarted after the slapd start)
+  if [ ! -e /tmp/.ynh-piratebox-boot ]; then
+    touch /tmp/.ynh-piratebox-boot
+    service php5-fpm restart
+  fi
+  
+  # Variables
+  
+  echo -n "Retrieving Yunohost settings... "
+  
+  ynh_wifi_device=$(moulinette_hotspot_get wifi_device)
+  ynh_ip4_nat_prefix=$(moulinette_hotspot_get ip4_nat_prefix)
+  
+  echo "OK"
+fi
+
+# Script
+
+case "$1" in
+  start)
+    if is_running; then
+      echo "Already started"
+    else
+      echo "[piratebox] Starting..."
+      touch /tmp/.ynh-piratebox-started
+
+      # Set IPv4 DNS NAT
+      if ! is_nat4_dns_set; then
+        echo "Set IPv4 DNS NAT"
+        set_nat4_dns
+      fi
+
+      # Set IPv4 Web NAT
+      if ! is_nat4_web_set; then
+        echo "Set IPv4 DNS NAT"
+        set_nat4_web
+      fi
+
+      # Run fakedns
+      if ! is_fakedns_running; then
+        echo "Run fakedns"
+        start_fakedns
+      fi
+    fi
+  ;;
+  stop)
+    echo "[piratebox] Stopping..."
+    rm -f /tmp/.ynh-piratebox-started
+
+    if is_nat4_dns_set; then
+      echo "Unset IPv4 DNS NAT"
+      unset_nat4_dns
+    fi
+
+    if is_nat4_web_set; then
+      echo "Unset IPv4 Web NAT"
+      unset_nat4_web
+    fi
+
+    if is_fakedns_running; then
+      echo "Stop fakedns"
+      stop_fakedns
+    fi
+  ;;
+  restart)
+    $0 stop
+    $0 start
+  ;;
+  status)
+    exitcode=0
+
+    if ! has_hotspot_app; then
+      echo "[ERR] Hotspot is not running"
+      exitcode=1
+    fi
+
+    if is_nat4_dns_set; then
+      echo "[OK] IPv4 DNS NAT set"
+    else
+      echo "[ERR] No IPv4 DNS NAT set"
+      exitcode=1
+    fi
+
+    if is_nat4_web_set; then
+      echo "[OK] IPv4 Web NAT set"
+    else
+      echo "[ERR] No IPv4 Web NAT set"
+      exitcode=1
+    fi
+
+    if is_fakedns_running; then
+      echo "[OK] Fakedns is running"
+    else
+      echo "[ERR] Fakedns is not running"
+      exitcode=1
+    fi
+
+    exit ${exitcode}
+  ;;
+  *)
+    echo "Usage: $0 {start|stop|restart|status}"
+    exit 1
+  ;;
+esac
+
+exit 0

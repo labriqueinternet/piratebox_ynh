@@ -28,7 +28,8 @@ if [ ! $? -eq 0 ]; then
 fi
 
 # Install packages
-packages='php5-fpm iptables'
+packages='php5-fpm iptables libnet-dns-perl'
+export DEBIAN_FRONTEND=noninteractive
 
 sudo apt-get --assume-yes --force-yes install ${packages}
 
@@ -38,52 +39,71 @@ if [ $? -ne 0 ]; then
 fi
 
 # Create web user
-sudo useradd -r piratebox
+sudo useradd -r dropcenter
 
 # Copy confs
-sudo install -b -o root -g root -m 0644 ../conf/nginx_piratebox.conf "/etc/nginx/conf.d/${domain}.d/piratebox.conf"
-sudo install -b -o root -g root -m 0644 ../conf/phpfpm_piratebox.conf /etc/php5/fpm/pool.d/piratebox.conf
+sudo install -b -o root -g root -m 0644 ../conf/nginx_piratebox.conf "/etc/nginx/conf.d/piratebox.conf"
+sudo install -b -o root -g root -m 0644 ../conf/nginx_dropcenter.conf "/etc/nginx/conf.d/${domain}.d/dropcenter.conf"
+sudo install -b -o root -g root -m 0644 ../conf/phpfpm_dropcenter.conf /etc/php5/fpm/pool.d/dropcenter.conf
 
 # Copy web sources
-sudo mkdir -pm 0755 /var/www/piratebox/
-sudo cp -a ../sources/* /var/www/piratebox/
-sudo mkdir /var/www/piratebox/tpl/tmp/
+sudo mkdir -pm 0755 /var/www/dropcenter/
+sudo cp -a ../sources/* /var/www/dropcenter/
+sudo mkdir /var/www/dropcenter/tpl/tmp/
 
-sudo chown -R root: /var/www/piratebox/
-sudo chmod -R 0644 /var/www/piratebox/*
-sudo find /var/www/piratebox/ -type d -exec chmod +x {} \;
+sudo chown -R root: /var/www/dropcenter/
+sudo chmod -R 0644 /var/www/dropcenter/*
+sudo find /var/www/dropcenter/ -type d -exec chmod +x {} \;
 
 # Fix permissions
-sudo chown -R piratebox: /var/www/piratebox/tpl/tmp/
-sudo chown -R piratebox: /var/www/piratebox/uploads/
+sudo chown -R dropcenter: /var/www/dropcenter/tpl/tmp/
+sudo chown -R dropcenter: /var/www/dropcenter/uploads/
 
 # Create fixed DC user
-sudo tee /var/www/piratebox/uploads/.dc/.user.dc.php > /dev/null << EOF
+sudo tee /var/www/dropcenter/uploads/.dc/.user.dc.php > /dev/null << EOF
 <?php /*{"login":"pirate","avatar":"","password":"","rank":"admin","mail":"","notifMail":"off","lang":"en - English"}*/ ?>
 EOF
 
-sudo touch /var/www/piratebox/uploads/avatars/pirate.jpg
+sudo touch /var/www/dropcenter/uploads/avatars/pirate.jpg
 
 # Fix confs
 ## nginx
-sudo sed "s|<TPL:NGINX_LOCATION>|${url_path}|g" -i "/etc/nginx/conf.d/${domain}.d/piratebox.conf"
-sudo sed 's|<TPL:NGINX_REALPATH>|/var/www/piratebox/|g' -i "/etc/nginx/conf.d/${domain}.d/piratebox.conf"
-sudo sed 's|<TPL:PHP_NAME>|piratebox|g' -i "/etc/nginx/conf.d/${domain}.d/piratebox.conf"
+sudo sed "s|<TPL:URL_PATH>|${url_path}|g" -i "/etc/nginx/conf.d/piratebox.conf"
+sudo sed "s|<TPL:DOMAIN>|${domain}|g" -i "/etc/nginx/conf.d/piratebox.conf"
+
+sudo sed "s|<TPL:NGINX_LOCATION>|${url_path}|g" -i "/etc/nginx/conf.d/${domain}.d/dropcenter.conf"
+sudo sed 's|<TPL:NGINX_REALPATH>|/var/www/dropcenter/|g' -i "/etc/nginx/conf.d/${domain}.d/dropcenter.conf"
+sudo sed 's|<TPL:PHP_NAME>|dropcenter|g' -i "/etc/nginx/conf.d/${domain}.d/dropcenter.conf"
 
 ## php-fpm
-sudo sed 's|<TPL:PHP_NAME>|piratebox|g' -i /etc/php5/fpm/pool.d/piratebox.conf
-sudo sed 's|<TPL:PHP_USER>|piratebox|g' -i /etc/php5/fpm/pool.d/piratebox.conf
-sudo sed 's|<TPL:PHP_GROUP>|piratebox|g' -i /etc/php5/fpm/pool.d/piratebox.conf
-sudo sed 's|<TPL:NGINX_REALPATH>|/var/www/piratebox/|g' -i /etc/php5/fpm/pool.d/piratebox.conf
+sudo sed 's|<TPL:PHP_NAME>|dropcenter|g' -i /etc/php5/fpm/pool.d/dropcenter.conf
+sudo sed 's|<TPL:PHP_USER>|dropcenter|g' -i /etc/php5/fpm/pool.d/dropcenter.conf
+sudo sed 's|<TPL:PHP_GROUP>|dropcenter|g' -i /etc/php5/fpm/pool.d/dropcenter.conf
+sudo sed 's|<TPL:NGINX_REALPATH>|/var/www/dropcenter/|g' -i /etc/php5/fpm/pool.d/dropcenter.conf
 sudo sed 's|^;\?\s*max_execution_time.\+|max_execution_time = 600|' -i /etc/php5/fpm/php.ini
 
+# Install fakedns
+sudo install -o root -g root -m 0755 ../conf/piratebox_fakedns /usr/local/bin/
+
+# Copy init script
+sudo install -o root -g root -m 0755 ../conf/init_ynh-piratebox /etc/init.d/ynh-piratebox
+
+# Update firewall
+sudo yunohost firewall allow --no-upnp UDP 4253
+sudo yunohost firewall allow --no-upnp TCP 4280
+
+# Set default inits
 sudo yunohost service add php5-fpm
 sudo yunohost service enable php5-fpm
 
 sudo service php5-fpm restart
 sudo service nginx reload
 
-# Update SSO for piratebox
+sudo yunohost service add ynh-piratebox
+sudo yunohost service enable ynh-piratebox
+sudo service ynh-piratebox start
+
+# Update SSO for wifiadmin
 sudo yunohost app ssowatconf
 
 exit 0

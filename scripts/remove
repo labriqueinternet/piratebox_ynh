@@ -20,9 +20,23 @@
 # Retrieve arguments
 domain=$(sudo yunohost app setting piratebox domain)
 
+# The End
+sudo service ynh-piratebox stop
+sudo yunohost service remove ynh-piratebox
+sudo rm -f /etc/init.d/ynh-piratebox
+sudo rm -f /tmp/.ynh-piratebox-*
+
+# Update firewall
+sudo yunohost firewall disallow UDP 4253
+sudo yunohost firewall disallow TCP 4280
+
 # Remove confs
-sudo rm -f /etc/nginx/conf.d/${domain}.d/piratebox.conf
-sudo rm -f /etc/php5/fpm/pool.d/piratebox.conf
+sudo rm -f /etc/nginx/conf.d/piratebox.conf
+sudo rm -f /etc/nginx/conf.d/${domain}.d/dropcenter.conf
+sudo rm -f /etc/php5/fpm/pool.d/dropcenter.conf
+
+# Delete fakedns
+sudo rm -f /usr/local/bin/piratebox_fakedns
 
 # Restart services
 sudo yunohost service stop php5-fpm
@@ -30,9 +44,9 @@ sudo yunohost service start php5-fpm
 sudo service nginx reload
 
 # Remove web user
-sudo userdel piratebox
+sudo userdel dropcenter
 
 # Remove sources
-sudo rm -rf /var/www/piratebox/
+sudo rm -rf /var/www/dropcenter/
 
 exit 0
