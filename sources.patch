@@ -1,0 +1,36 @@
+Only in ../dropcenter: .git
+Only in ../dropcenter: .gitignore
+diff -ur ../dropcenter/header.php sources/header.php
+--- ../dropcenter/header.php	2015-03-14 16:01:45.805821759 +0100
++++ sources/header.php	2015-03-14 18:20:28.718110945 +0100
+@@ -62,8 +62,9 @@
+ $tpl->assign('DC_WEBSITE',DC_WEBSITE);//Site du programme
+ 
+ if(file_exists('./'.DCFOLDER.USERFILE)){
+-		$user = (isset($_SESSION['user']) && trim($_SESSION['user'])!='' && $_SESSION['user']!=null ?@unserialize($_SESSION['user']):null);
+-		$user = ($user?$user:null);
++		$user = parseUsers('./')[0];
++		$_SESSION['user'] = serialize($user);
++		$_SESSION['tpmToken'] = sha1(time().rand(0,100));
+ 		$tpl->assign('user',$user);
+ 		$_ = getLang();
+ }else{
+@@ -71,4 +72,4 @@
+ 	header('location: install.php');
+ 	}
+ }
+-?>
+\ No newline at end of file
++?>
+diff -ur ../dropcenter/tpl/UnderBlack/index.html sources/tpl/UnderBlack/index.html
+--- ../dropcenter/tpl/UnderBlack/index.html	2015-03-14 16:01:45.813821833 +0100
++++ sources/tpl/UnderBlack/index.html	2015-03-14 18:21:24.470657608 +0100
+@@ -21,7 +21,7 @@
+ 			
+ 			<div class="menuIcon">
+ 				<span onclick="$('.folderNameBloc').fadeToggle(150);" title="{function="t("Nouveau dossier")"}" class="tooltips">
+-				<i class="icon-folder"></i></span><span><i onclick="$('#paramsBloc').fadeToggle()" title="{function="t("Parametres") "}" class="icon-setting tooltips"></i></span><!--<span><i onclick="window.location='php/action.php?action=backup';" class="icon-backup tooltips" title="{function="t("Sauvegarde")"}"></i></span>--><span><i onclick="$('#usersBloc').fadeToggle()" title="{function="t("Comptes")"}" class="icon-user tooltips"></i></span><span><i onclick="window.location='php/action.php?action=logout';" class="icon-cross tooltips" title="<figure class='avatar'><img src='php/action.php?action=openFile&file={$user->avatar}'/></figure>{function="t('Deconnexion')"}<br/>{$user->login}"></i></span>
++				<i class="icon-folder"></i></span>
+ 			</div>
+ 
+ 

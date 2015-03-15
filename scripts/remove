@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# PirateBox app for YunoHost 
+# Copyright (C) 2015 Julien Vaubourg <julien@vaubourg.com>
+# Contribute at https://github.com/jvaubourg/piratebox_ynh
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+# 
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# Retrieve arguments
+domain=$(sudo yunohost app setting piratebox domain)
+
+# Remove confs
+sudo rm -f /etc/nginx/conf.d/${domain}.d/piratebox.conf
+sudo rm -f /etc/php5/fpm/pool.d/piratebox.conf
+
+# Restart services
+sudo yunohost service stop php5-fpm
+sudo yunohost service start php5-fpm
+sudo service nginx reload
+
+# Remove web user
+sudo userdel piratebox
+
+# Remove sources
+sudo rm -rf /var/www/piratebox/
+
+exit 0

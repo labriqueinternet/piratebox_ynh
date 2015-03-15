@@ -1,0 +1,89 @@
+#!/bin/bash
+
+# PirateBox app for YunoHost 
+# Copyright (C) 2015 Julien Vaubourg <julien@vaubourg.com>
+# Contribute at https://github.com/jvaubourg/piratebox_ynh
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+# 
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# Retrieve arguments
+domain=${1}
+url_path=${2}
+
+# Check domain/path availability
+sudo yunohost app checkurl ${domain}${url_path} -a piratebox
+if [ ! $? -eq 0 ]; then
+  exit 1
+fi
+
+# Install packages
+packages='php5-fpm iptables'
+
+sudo apt-get --assume-yes --force-yes install ${packages}
+
+if [ $? -ne 0 ]; then
+  sudo apt-get update
+  sudo apt-get --assume-yes --force-yes install ${packages}
+fi
+
+# Create web user
+sudo useradd -r piratebox
+
+# Copy confs
+sudo install -b -o root -g root -m 0644 ../conf/nginx_piratebox.conf "/etc/nginx/conf.d/${domain}.d/piratebox.conf"
+sudo install -b -o root -g root -m 0644 ../conf/phpfpm_piratebox.conf /etc/php5/fpm/pool.d/piratebox.conf
+
+# Copy web sources
+sudo mkdir -pm 0755 /var/www/piratebox/
+sudo cp -a ../sources/* /var/www/piratebox/
+sudo mkdir /var/www/piratebox/tpl/tmp/
+
+sudo chown -R root: /var/www/piratebox/
+sudo chmod -R 0644 /var/www/piratebox/*
+sudo find /var/www/piratebox/ -type d -exec chmod +x {} \;
+
+# Fix permissions
+sudo chown -R piratebox: /var/www/piratebox/tpl/tmp/
+sudo chown -R piratebox: /var/www/piratebox/uploads/
+
+# Create fixed DC user
+sudo tee /var/www/piratebox/uploads/.dc/.user.dc.php > /dev/null << EOF
+<?php /*{"login":"pirate","avatar":"","password":"","rank":"admin","mail":"","notifMail":"off","lang":"en - English"}*/ ?>
+EOF
+
+sudo touch /var/www/piratebox/uploads/avatars/pirate.jpg
+
+# Fix confs
+## nginx
+sudo sed "s|<TPL:NGINX_LOCATION>|${url_path}|g" -i "/etc/nginx/conf.d/${domain}.d/piratebox.conf"
+sudo sed 's|<TPL:NGINX_REALPATH>|/var/www/piratebox/|g' -i "/etc/nginx/conf.d/${domain}.d/piratebox.conf"
+sudo sed 's|<TPL:PHP_NAME>|piratebox|g' -i "/etc/nginx/conf.d/${domain}.d/piratebox.conf"
+
+## php-fpm
+sudo sed 's|<TPL:PHP_NAME>|piratebox|g' -i /etc/php5/fpm/pool.d/piratebox.conf
+sudo sed 's|<TPL:PHP_USER>|piratebox|g' -i /etc/php5/fpm/pool.d/piratebox.conf
+sudo sed 's|<TPL:PHP_GROUP>|piratebox|g' -i /etc/php5/fpm/pool.d/piratebox.conf
+sudo sed 's|<TPL:NGINX_REALPATH>|/var/www/piratebox/|g' -i /etc/php5/fpm/pool.d/piratebox.conf
+sudo sed 's|^;\?\s*max_execution_time.\+|max_execution_time = 600|' -i /etc/php5/fpm/php.ini
+
+sudo yunohost service add php5-fpm
+sudo yunohost service enable php5-fpm
+
+sudo service php5-fpm restart
+sudo service nginx reload
+
+# Update SSO for piratebox
+sudo yunohost app ssowatconf
+
+exit 0

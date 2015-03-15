@@ -1,0 +1,36 @@
+{
+  "name": "PirateBox",
+  "id": "piratebox",
+  "description": {
+    "en": "PirateBox",
+    "fr": "PirateBox"
+  },
+  "license": "AGPL-3",
+  "developer": {
+    "name": "Julien Vaubourg",
+    "email": "julien@vaubourg.com",
+    "url": "http://julien.vaubourg.com"
+  },
+  "multi_instance": "false",
+  "arguments": {
+    "install" : [
+      {
+        "name": "domain",
+        "ask": {
+            "en": "Choose a domain",
+            "fr": "Choisissez un domaine"
+        },
+        "example": "domain.org"
+      },
+      {
+        "name": "path",
+        "ask": {
+            "en": "Choose a path",
+            "fr": "Choissez un chemin"
+        },
+        "example": "/piratebox",
+        "default": "/piratebox"
+      }
+    ]
+  }
+}
