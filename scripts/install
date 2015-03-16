@@ -103,7 +103,8 @@ sudo yunohost service add ynh-piratebox
 sudo yunohost service enable ynh-piratebox
 sudo service ynh-piratebox start
 
-# Update SSO for wifiadmin
+# Update SSO
+sudo yunohost app setting piratebox skipped_uris -v /
 sudo yunohost app ssowatconf
 
 exit 0

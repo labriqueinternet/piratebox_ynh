@@ -137,7 +137,7 @@ case "$1" in
 
       # Set IPv4 Web NAT
       if ! is_nat4_web_set; then
-        echo "Set IPv4 DNS NAT"
+        echo "Set IPv4 Web NAT"
         set_nat4_web
       fi
 
