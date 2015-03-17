@@ -15,7 +15,7 @@ Based on [DropCenter](http://projet.idleman.fr/dropcenter/) (the project was pat
 
 ## Requirements
 
-You have to install the [Wifi Hotspot app for YunoHost](https://github.com/jvaubourg/hotspot_ynh) before and disable the secure access mode thanks to the friendly web interface.
+You have to install the [Wifi Hotspot app for YunoHost](https://github.com/jvaubourg/hotspot_ynh) before and disable the wifi secure access mode thanks to the friendly web interface.
 
 ## How It Works ##
 
@@ -23,13 +23,13 @@ Explanations:
 
 1. all packets to port 53 are redirected to the port 4253,
 2. a fake DNS resolver listens on the port 4253, and systematically responds the IPv4 address of the server (a fake DNS resolver is mandatory for responding to any requests, without internet connection),
-3. a NAT rule allows the fake DNS to respond in place of the initially requested resolver,
+3. a MASQUERADE rule allows the fake DNS to respond in place of the initially requested resolver,
 4. all packets to port 80 are redirected to the port 4280,
-5. a Nginx vhost listens on the port 4280, and redirect to the PirateBox web page (when the requested domain corresponds to the one used by the PirateBox, a proxy to the port 80 is used).
+5. a Nginx vhost listens on the port 4280, and redirect to the PirateBox web page (when the requested domain corresponds to the one used by the PirateBox, a reverse-proxy to the port 80 is used).
 
 ## Limitations ##
 
-* If the user requests web sites he used to consult, his browser may have a DNS cache entry for it (60s with Firefox) - but there is no problem in the other way because the fake DNS always responds with a TTL of 1s
-* IPv4-only because the NAT rules are not available before the kernel 3.8 (not in Debian stable for now)
-* Don't redirect to the PirateBox web page with HTTPS requests (in order to avoid wrong certificates and to allow to use the YunoHost administration)
+* If the user requests web sites he used to consult once connected, his browser may have a DNS cache entry for it (60s with Firefox) - but there is no problem in the other way because the fake DNS always responds with a TTL of 1s
+* IPv4-only because the NAT table is not available for IPv6 before the kernel 3.8 (not in Debian stable for now)
+* Don't redirect to the PirateBox web page with HTTPS requests (in order to avoid wrong certificates and to allow using the YunoHost administration)
 * The PirateBox is not HTTPS compliant, but it's not a problem because there is no privacy issues with a such free app
