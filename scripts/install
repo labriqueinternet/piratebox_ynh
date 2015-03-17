@@ -42,6 +42,8 @@ fi
 sudo useradd -r dropcenter
 
 # Copy confs
+sudo mkdir -pm 0755 /var/log/nginx/
+
 sudo install -b -o root -g root -m 0644 ../conf/nginx_piratebox.conf "/etc/nginx/conf.d/piratebox.conf"
 sudo install -b -o root -g root -m 0644 ../conf/nginx_dropcenter.conf "/etc/nginx/conf.d/${domain}.d/dropcenter.conf"
 sudo install -b -o root -g root -m 0644 ../conf/phpfpm_dropcenter.conf /etc/php5/fpm/pool.d/dropcenter.conf
