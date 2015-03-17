@@ -32,4 +32,4 @@ Explanations:
 * If the user requests web sites he used to consult once connected, his browser may have a DNS cache entry for it (60s with Firefox) - but there is no problem in the other way because the fake DNS always responds with a TTL of 1s
 * IPv4-only because the NAT table is not available for IPv6 before the kernel 3.8 (not in Debian stable for now)
 * Don't redirect to the PirateBox web page with HTTPS requests (in order to avoid wrong certificates and to allow to use the YunoHost administration - even though disabling it may be a good idea in this case)
-* The PirateBox is not HTTPS compliant, but it's not a problem because there is no privacy issues with a such free app
+* The PirateBox is not HTTPS compliant, but it's not a problem because there are no privacy issues with a such free app
