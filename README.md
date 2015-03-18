@@ -12,6 +12,7 @@ Based on [DropCenter](http://projet.idleman.fr/dropcenter/) (the project was pat
 * All destinations lead to the PirateBox web page
 * No authentication required for uploading, downloading or deleting (lawless zone)
 * Of course, works without internet connection
+* [Screenshot](https://raw.githubusercontent.com/jvaubourg/piratebox_ynh/master/screenshot.png)
 
 ## Requirements
 
