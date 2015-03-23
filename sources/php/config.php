@@ -18,7 +18,7 @@ define('READ_FOR_ANONYMOUS',false);// Définit si les visiteurs non authentifié
 define('DC_LANG','fr - Francais');//Définit la langue par défaut
 define('DIR_LANG','lang/');//Dossier des fichiers de langue
 define('MAIL',false);//Autorise les notifications par e-mail
-define('DISPLAY_DOTFILES',true);//Affiche ou non les dossiers/fichiers commençant par un point
+define('DISPLAY_DOTFILES',false);//Affiche ou non les dossiers/fichiers commençant par un point
 define('DISPLAY_UPDATE',false);//Activer la vérification des mises-à-jour
 define('DISPLAY_AVATAR_FOLDER',false);//Afficher le dossier des avatars
 define('DEFAULT_THEME','UnderBlack');//Afficher le dossier des avatars
