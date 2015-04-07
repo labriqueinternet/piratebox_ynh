@@ -42,6 +42,14 @@ is_nat4_web_set() {
   iptables -nvt nat -L PREROUTING | grep 'tcp dpt:80' | grep -q "${ynh_wifi_device}"
 }
 
+is_filt4_nohttps_set() {
+  iptables -nv -L INPUT | grep 'tcp dpt:443 reject' | grep -q "${ynh_wifi_device}"
+}
+
+is_filt4_nofwd_set() {
+  iptables -nv -L FORWARD | grep 'reject-with' | grep -q "${ynh_wifi_device}"
+}
+
 is_fakedns_running() {
   ps aux | grep -v grep | grep -q piratebox_fakedns
 }
@@ -49,6 +57,7 @@ is_fakedns_running() {
 is_running() {
   has_hotspot_app \
   && is_nat4_dns_set && is_nat4_web_set \
+  && is_filt4_nohttps_set && is_filt4_nofwd_set \
   && is_fakedns_running
 }
 
@@ -67,6 +76,14 @@ set_nat4_web() {
   iptables -t nat -A PREROUTING -i "${ynh_wifi_device}" -p tcp --dport 80 -j REDIRECT --to-port 4280
 }
 
+set_filt4_nohttps() {
+  iptables -I INPUT 1 -i "${ynh_wifi_device}" -p tcp --dport 443 -j REJECT
+}
+
+set_filt4_nofwd() {
+  iptables -I FORWARD 1 -j REJECT -i "${ynh_wifi_device}"
+}
+
 start_fakedns() {
   /usr/local/bin/piratebox_fakedns "${ynh_ip4_nat_prefix}.1" 2>&1 > /dev/null &
 }
@@ -80,6 +97,14 @@ unset_nat4_dns() {
 
 unset_nat4_web() {
   iptables -t nat -D PREROUTING -i "${ynh_wifi_device}" -p tcp --dport 80 -j REDIRECT --to-port 4280
+}
+
+unset_filt4_nohttps() {
+  iptables -D INPUT -i "${ynh_wifi_device}" -p tcp --dport 443 -j REJECT
+}
+
+unset_filt4_nofwd() {
+  iptables -D FORWARD -j REJECT -i "${ynh_wifi_device}"
 }
 
 stop_fakedns() {
@@ -125,6 +150,8 @@ case "$1" in
   start)
     if is_running; then
       echo "Already started"
+    elif ! has_hotspot_app; then
+      echo "[ERR] Hotspot is not running"
     else
       echo "[piratebox] Starting..."
       touch /tmp/.ynh-piratebox-started
@@ -139,6 +166,18 @@ case "$1" in
       if ! is_nat4_web_set; then
         echo "Set IPv4 Web NAT"
         set_nat4_web
+      fi
+
+      # Set IPv4 No-Https filter rule
+      if ! is_filt4_nohttps_set; then
+        echo "Set IPv4 No-Https filter rule"
+        set_filt4_nohttps
+      fi
+
+      # Set IPv4 No-Forwarding filter rule
+      if ! is_filt4_nofwd_set; then
+        echo "Set IPv4 No-Forwarding filter rule"
+        set_filt4_nofwd
       fi
 
       # Run fakedns
@@ -160,6 +199,16 @@ case "$1" in
     if is_nat4_web_set; then
       echo "Unset IPv4 Web NAT"
       unset_nat4_web
+    fi
+
+    if is_filt4_nohttps_set; then
+      echo "Unset IPv4 No-Https filter rule"
+      unset_filt4_nohttps
+    fi
+
+    if is_filt4_nofwd_set; then
+      echo "Unset IPv4 No-Forwarding filter rule"
+      unset_filt4_nofwd
     fi
 
     if is_fakedns_running; then
@@ -190,6 +239,20 @@ case "$1" in
       echo "[OK] IPv4 Web NAT set"
     else
       echo "[ERR] No IPv4 Web NAT set"
+      exitcode=1
+    fi
+
+    if is_filt4_nohttps_set; then
+      echo "[OK] IPv4 No-Https filter rule set"
+    else
+      echo "[ERR] No IPv4 No-Https filter rule set"
+      exitcode=1
+    fi
+
+    if is_filt4_nofwd_set; then
+      echo "[OK] IPv4 No-Forwarding filter rule set"
+    else
+      echo "[ERR] No IPv4 No-Forwarding filter rule set"
       exitcode=1
     fi
 

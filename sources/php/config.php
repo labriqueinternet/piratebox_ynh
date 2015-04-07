@@ -15,7 +15,7 @@ define('AVATARFOLDER',UPLOAD_FOLDER.'avatars/'); //dossier contenant les avatars
 define('FORTUNE',false);//Affiche une citation aléatoire Chuck Norris Facts (mettre à false pour ne pas afficher)
 define('RSS_MAIL','rss@mail.com');
 define('READ_FOR_ANONYMOUS',false);// Définit si les visiteurs non authentifiés peuvent lire le contenu du dropCenter (true = lecture possible, false = lecture interdite)
-define('DC_LANG','fr - Francais');//Définit la langue par défaut
+define('DC_LANG','en - English');//Définit la langue par défaut
 define('DIR_LANG','lang/');//Dossier des fichiers de langue
 define('MAIL',false);//Autorise les notifications par e-mail
 define('DISPLAY_DOTFILES',false);//Affiche ou non les dossiers/fichiers commençant par un point

@@ -20,16 +20,8 @@
             "en": "Choose a domain",
             "fr": "Choisissez un domaine"
         },
-        "example": "domain.org"
-      },
-      {
-        "name": "path",
-        "ask": {
-            "en": "Choose a path",
-            "fr": "Choissez un chemin"
-        },
-        "example": "/piratebox",
-        "default": "/piratebox"
+        "example": "pirate.box",
+        "default": "pirate.box"
       }
     ]
   }

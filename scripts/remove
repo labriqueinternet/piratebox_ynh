@@ -31,9 +31,9 @@ sudo yunohost firewall disallow UDP 4253
 sudo yunohost firewall disallow TCP 4280
 
 # Remove confs
-sudo rm -f /etc/nginx/conf.d/piratebox.conf
-sudo rm -f /etc/nginx/conf.d/${domain}.d/dropcenter.conf
-sudo rm -f /etc/php5/fpm/pool.d/dropcenter.conf
+sudo rm -f /etc/nginx/conf.d/captive-piratebox.conf
+sudo rm -f "/etc/nginx/conf.d/${domain}.d/piratebox.conf"
+sudo rm -f /etc/php5/fpm/pool.d/piratebox.conf
 
 # Delete fakedns
 sudo rm -f /usr/local/bin/piratebox_fakedns
@@ -44,9 +44,9 @@ sudo yunohost service start php5-fpm
 sudo service nginx reload
 
 # Remove web user
-sudo userdel dropcenter
+sudo userdel piratebox
 
 # Remove sources
-sudo rm -rf /var/www/dropcenter/
+sudo rm -rf /var/www/piratebox/
 
 exit 0
