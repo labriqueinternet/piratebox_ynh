@@ -218,6 +218,8 @@ case "$1" in
       echo "Stop fakedns"
       stop_fakedns
     fi
+
+    rm -rf /var/spool/piratebox/*
   ;;
   restart)
     $0 stop
