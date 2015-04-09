@@ -156,6 +156,9 @@ case "$1" in
       echo "[piratebox] Starting..."
       touch /tmp/.ynh-piratebox-started
 
+      # Purge tmp folder
+      rm -rf /var/spool/piratebox/*
+
       # Set IPv4 DNS NAT
       if ! is_nat4_dns_set; then
         echo "Set IPv4 DNS NAT"

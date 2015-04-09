@@ -43,8 +43,8 @@ sudo yunohost service stop php5-fpm
 sudo yunohost service start php5-fpm
 sudo service nginx reload
 
-# Remove web user
-sudo userdel piratebox
+# Remove tmp folder
+sudo rm -rf /var/spool/piratebox/
 
 # Remove sources
 sudo rm -rf /var/www/piratebox/

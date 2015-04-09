@@ -38,11 +38,10 @@ if [ $? -ne 0 ]; then
   sudo apt-get --assume-yes --force-yes install ${packages}
 fi
 
-# Create web user
-sudo useradd -r piratebox
-
 # Copy confs
 sudo mkdir -pm 0755 /var/log/nginx/
+sudo mkdir -pm 0755 /var/spool/piratebox/
+sudo chown www-data: /var/spool/piratebox/
 
 sudo install -b -o root -g root -m 0644 ../conf/nginx_captive-piratebox.conf /etc/nginx/conf.d/captive-piratebox.conf
 sudo install -b -o root -g root -m 0644 ../conf/nginx_piratebox.conf "/etc/nginx/conf.d/${domain}.d/piratebox.conf"
@@ -58,8 +57,8 @@ sudo chmod -R 0644 /var/www/piratebox/*
 sudo find /var/www/piratebox/ -type d -exec chmod +x {} \;
 
 # Fix permissions
-sudo chown -R piratebox: /var/www/piratebox/tpl/tmp/
-sudo chown -R piratebox: /var/www/piratebox/uploads/
+sudo chown -R www-data: /var/www/piratebox/tpl/tmp/
+sudo chown -R www-data: /var/www/piratebox/uploads/
 
 # Create fixed DC user
 sudo tee /var/www/piratebox/uploads/.dc/.user.dc.php > /dev/null << EOF
@@ -76,10 +75,9 @@ sudo sed 's|<TPL:PHP_NAME>|piratebox|g' -i /etc/nginx/conf.d/captive-piratebox.c
 
 ## php-fpm
 sudo sed 's|<TPL:PHP_NAME>|piratebox|g' -i /etc/php5/fpm/pool.d/piratebox.conf
-sudo sed 's|<TPL:PHP_USER>|piratebox|g' -i /etc/php5/fpm/pool.d/piratebox.conf
-sudo sed 's|<TPL:PHP_GROUP>|piratebox|g' -i /etc/php5/fpm/pool.d/piratebox.conf
+sudo sed 's|<TPL:PHP_USER>|www-data|g' -i /etc/php5/fpm/pool.d/piratebox.conf
+sudo sed 's|<TPL:PHP_GROUP>|www-data|g' -i /etc/php5/fpm/pool.d/piratebox.conf
 sudo sed 's|<TPL:NGINX_REALPATH>|/var/www/piratebox/|g' -i /etc/php5/fpm/pool.d/piratebox.conf
-sudo sed 's|^;\?\s*max_execution_time.\+|max_execution_time = 600|' -i /etc/php5/fpm/php.ini
 
 # Install fakedns
 sudo install -o root -g root -m 0755 ../conf/piratebox_fakedns /usr/local/bin/
