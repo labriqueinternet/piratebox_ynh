@@ -33,5 +33,5 @@ Explanations:
 
 ## Limitations ##
 
-* IPv4-only because the NAT table is not available for IPv6 before the kernel 3.8 (not in Debian stable for now)
+* IPv4-only because the NAT table is not available for IPv6 before the kernel 3.9.0 and iptables 1.4.18 (not in Debian stable for now)
 * Don't redirect to the PirateBox web page with explicit HTTPS requests (in order to avoid offering self-signed certificates on well-known domains)
