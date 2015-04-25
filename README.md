@@ -13,7 +13,7 @@ Based on [php-piratebox](https://github.com/jvaubourg/php-piratebox).
 * No authentication required for uploading, downloading or deleting (lawless zone)
 * Of course, works without internet connection
 * [Screenshot](https://raw.githubusercontent.com/jvaubourg/piratebox_ynh/master/screenshot.png)
-* [Web interface features](https://github.com/jvaubourg/php-piratebox) and more screenshots
+* [Web interface features](https://github.com/jvaubourg/php-piratebox) and [more screenshots](https://github.com/jvaubourg/php-piratebox#screenshots)
 
 The YunoHost administration is only available through the wired connection.
 
