@@ -22,6 +22,33 @@
         },
         "example": "pirate.box",
         "default": "pirate.box"
+      },
+      {
+        "name": "opt_deleting",
+        "ask": {
+            "en": "Can users delete files? (yes/no)",
+            "fr": "Les utilisateurs peuvent-ils supprimer des fichiers ? (yes/no)"
+        },
+        "example": "yes",
+        "default": "yes"
+      },
+      {
+        "name": "opt_renaming",
+        "ask": {
+            "en": "Can users rename files? (yes/no)",
+            "fr": "Les utilisateurs peuvent-ils renommer des fichiers ? (yes/no)"
+        },
+        "example": "yes",
+        "default": "yes"
+      },
+      {
+        "name": "opt_chat",
+        "ask": {
+            "en": "Enable the chat? (yes/no)",
+            "fr": "Activer le chat ? (yes/no)"
+        },
+        "example": "yes",
+        "default": "yes"
       }
     ]
   }

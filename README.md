@@ -3,7 +3,7 @@
 
 PirateBox app for [YunoHost](http://yunohost.org/).
 
-Based on [DropCenter](http://projet.idleman.fr/dropcenter/) (the project was patched in order to remove the authentication mechanism and some other useless features).
+Based on [php-piratebox](https://github.com/jvaubourg/php-piratebox).
 
 ## Features
 
@@ -13,6 +13,7 @@ Based on [DropCenter](http://projet.idleman.fr/dropcenter/) (the project was pat
 * No authentication required for uploading, downloading or deleting (lawless zone)
 * Of course, works without internet connection
 * [Screenshot](https://raw.githubusercontent.com/jvaubourg/piratebox_ynh/master/screenshot.png)
+* [Web interface features](https://github.com/jvaubourg/php-piratebox) and more screenshots
 
 The YunoHost administration is only available through the wired connection.
 

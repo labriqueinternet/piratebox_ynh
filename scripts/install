@@ -20,6 +20,27 @@
 # Retrieve arguments
 domain=${1}
 url_path=/piratebox
+opt_deleting=${2}
+opt_renaming=${3}
+opt_chat=${4}
+
+if [ "${opt_deleting}" == yes ]; then
+  opt_deleting=true
+else
+  opt_deleting=false
+fi
+
+if [ "${opt_renaming}" == yes ]; then
+  opt_renaming=true
+else
+  opt_renaming=false
+fi
+
+if [ "${opt_chat}" == yes ]; then
+  opt_chat=true
+else
+  opt_chat=false
+fi
 
 # Check domain/path availability
 sudo yunohost app checkurl ${domain}${url_path} -a piratebox
@@ -28,7 +49,7 @@ if [ ! $? -eq 0 ]; then
 fi
 
 # Install packages
-packages='php5-fpm iptables libnet-dns-perl'
+packages='php5-fpm iptables libnet-dns-perl git'
 export DEBIAN_FRONTEND=noninteractive
 
 sudo apt-get --assume-yes --force-yes install ${packages}
@@ -48,24 +69,23 @@ sudo install -b -o root -g root -m 0644 ../conf/nginx_piratebox.conf "/etc/nginx
 sudo install -b -o root -g root -m 0644 ../conf/phpfpm_piratebox.conf /etc/php5/fpm/pool.d/piratebox.conf
 
 # Copy web sources
-sudo mkdir -pm 0755 /var/www/piratebox/
-sudo cp -a ../sources/* /var/www/piratebox/
-sudo mkdir /var/www/piratebox/tpl/tmp/
+sudo git clone https://github.com/jvaubourg/php-piratebox.git /var/www/piratebox/
 
 sudo chown -R root: /var/www/piratebox/
-sudo chmod -R 0644 /var/www/piratebox/*
+sudo chmod -R 0644 /var/www/piratebox/
 sudo find /var/www/piratebox/ -type d -exec chmod +x {} \;
 
+sudo install -b -o root -g root -m 0644 ../conf/piratebox_config.php.tpl /var/www/piratebox/config.php
+
 # Fix permissions
-sudo chown -R www-data: /var/www/piratebox/tpl/tmp/
-sudo chown -R www-data: /var/www/piratebox/uploads/
+sudo chown -R www-data: /var/www/piratebox/public/uploads/
+sudo chown -R www-data: /var/www/piratebox/public/chat/
 
-# Create fixed DC user
-sudo tee /var/www/piratebox/uploads/.dc/.user.dc.php > /dev/null << EOF
-<?php /*{"login":"pirate","avatar":"","password":"","rank":"admin","mail":"","notifMail":"off","lang":"en - English"}*/ ?>
-EOF
-
-sudo touch /var/www/piratebox/uploads/avatars/pirate.jpg
+# Fix php-piratebox configuration
+sudo sed 's|<TPL:NGINX_REALPATH>|/var/www/piratebox/|g' -i /var/www/piratebox/config.php
+sudo sed "s|<TPL:OPT_RENAMING>|$opt_renaming|g" -i /var/www/piratebox/config.php
+sudo sed "s|<TPL:OPT_DELETING>|$opt_deleting|g" -i /var/www/piratebox/config.php
+sudo sed "s|<TPL:OPT_CHAT>|$opt_chat|g" -i /var/www/piratebox/config.php
 
 # Fix confs
 ## nginx
