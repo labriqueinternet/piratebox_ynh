@@ -113,6 +113,19 @@ stop_fakedns() {
 
 ## Tools
 
+moulinette_get() {
+  var=${1}
+
+  value=$(yunohost app setting piratebox "${var}")
+
+  if [[ "${value}" =~ "An instance is already running" ]]; then
+    echo "${value}" >&2
+    exit 1
+  fi
+
+  echo "${value}"
+}
+
 moulinette_hotspot_get() {
   var=${1}
 
@@ -138,8 +151,16 @@ if [ "$1" != restart ]; then
   
   echo -n "Retrieving Yunohost settings... "
   
-  ynh_wifi_device=$(moulinette_hotspot_get wifi_device)
-  ynh_ip4_nat_prefix=$(moulinette_hotspot_get ip4_nat_prefix)
+  ynh_wifi_device_id=$(moulinette_get wifi_device_id)
+
+  if [ "${ynh_wifi_device_id}" -eq 0 ]; then
+    ynh_wifi_device="$(moulinette_hotspot_get wifi_device)"
+  else
+    ynh_wifi_device="hotspot${ynh_wifi_device_id}"
+  fi
+
+  IFS='|' read -a ynh_ip4_nat_prefix <<< "$(moulinette_hotspot_get ip4_nat_prefix)"
+  ynh_ip4_nat_prefix=${ynh_ip4_nat_prefix[${ynh_wifi_device_id}]}
   
   echo "OK"
 fi

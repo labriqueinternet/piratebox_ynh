@@ -48,6 +48,9 @@ if [ ! $? -eq 0 ]; then
   exit 1
 fi
 
+# Save arguments
+sudo yunohost app setting piratebox wifi_device_id -v 0
+
 # Install packages
 packages='php5-fpm iptables libnet-dns-perl git'
 export DEBIAN_FRONTEND=noninteractive
