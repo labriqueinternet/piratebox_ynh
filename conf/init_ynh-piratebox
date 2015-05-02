@@ -2,7 +2,7 @@
 ### BEGIN INIT INFO
 # Provides: ynh-piratebox
 # Required-Start:    $network $remote_fs $syslog ynh-hotspot
-# Required-Stop:     $network $remote_fs $syslog
+# Required-Stop:     $network $remote_fs $syslog ynh-hotspot
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
 # Short-Description: Set prerequisites for wifi piratebox.
