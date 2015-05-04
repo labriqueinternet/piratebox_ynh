@@ -58,7 +58,12 @@ is_running() {
   has_hotspot_app \
   && is_nat4_dns_set && is_nat4_web_set \
   && is_filt4_nohttps_set && is_filt4_nofwd_set \
+  && is_captive_set \
   && is_fakedns_running
+}
+
+is_captive_set() {
+  ls /etc/nginx/conf.d/captive-piratebox.conf &> /dev/null
 }
 
 ## Setters
@@ -84,6 +89,19 @@ set_filt4_nofwd() {
   iptables -I FORWARD 1 -j REJECT -i "${ynh_wifi_device}"
 }
 
+set_captive() {
+  cp /var/www/piratebox/config.{tpl.,}php
+
+  sed -i "s|<TPL:OPT_NAME>|${ynh_opt_name}|" -i /var/www/piratebox/config.php
+  sed -i "s|<TPL:OPT_RENAMING>|${ynh_opt_renaming}|" -i /var/www/piratebox/config.php
+  sed -i "s|<TPL:OPT_DELETING>|${ynh_opt_deleting}|" -i /var/www/piratebox/config.php
+  sed -i "s|<TPL:OPT_CHAT>|${ynh_opt_chat}|" -i /var/www/piratebox/config.php
+
+  cp /etc/nginx/{,conf.d/}captive-piratebox.conf
+
+  service nginx reload
+}
+
 start_fakedns() {
   /usr/local/bin/piratebox_fakedns "${ynh_ip4_nat_prefix}.1" 2>&1 > /dev/null &
 }
@@ -105,6 +123,12 @@ unset_filt4_nohttps() {
 
 unset_filt4_nofwd() {
   iptables -D FORWARD -j REJECT -i "${ynh_wifi_device}"
+}
+
+unset_captive() {
+  rm -f /etc/nginx/conf.d/captive-piratebox.conf
+
+  service nginx reload
 }
 
 stop_fakedns() {
@@ -151,7 +175,12 @@ if [ "$1" != restart ]; then
   
   echo -n "Retrieving Yunohost settings... "
   
+  ynh_service_enabled=$(moulinette_get service_enabled)
   ynh_wifi_device_id=$(moulinette_get wifi_device_id)
+  ynh_opt_renaming=$(moulinette_get opt_renaming)
+  ynh_opt_deleting=$(moulinette_get opt_deleting)
+  ynh_opt_chat=$(moulinette_get opt_chat)
+  ynh_opt_name=$(moulinette_get opt_name)
 
   if [ "${ynh_wifi_device_id}" -eq 0 ]; then
     ynh_wifi_device="$(moulinette_hotspot_get wifi_device)"
@@ -171,6 +200,8 @@ case "$1" in
   start)
     if is_running; then
       echo "Already started"
+    elif [ "${ynh_service_enabled}" -eq 0 ]; then
+      echo "Disabled service"
     elif ! has_hotspot_app; then
       echo "[ERR] Hotspot is not running"
     else
@@ -192,16 +223,22 @@ case "$1" in
         set_nat4_web
       fi
 
-      # Set IPv4 No-Https filter rule
+      # Set IPv4 No Https-filter rule
       if ! is_filt4_nohttps_set; then
-        echo "Set IPv4 No-Https filter rule"
+        echo "Set IPv4 No Https-filter rule"
         set_filt4_nohttps
       fi
 
-      # Set IPv4 No-Forwarding filter rule
+      # Set IPv4 No Forwarding-filter rule
       if ! is_filt4_nofwd_set; then
-        echo "Set IPv4 No-Forwarding filter rule"
+        echo "Set IPv4 No Forwarding-filter rule"
         set_filt4_nofwd
+      fi
+
+      # Set captive configuration
+      if ! is_captive_set; then
+        echo "Set the captive portal configuration"
+        set_captive
       fi
 
       # Run fakedns
@@ -226,13 +263,18 @@ case "$1" in
     fi
 
     if is_filt4_nohttps_set; then
-      echo "Unset IPv4 No-Https filter rule"
+      echo "Unset IPv4 No Https-filter rule"
       unset_filt4_nohttps
     fi
 
     if is_filt4_nofwd_set; then
-      echo "Unset IPv4 No-Forwarding filter rule"
+      echo "Unset IPv4 No Forwarding-filter rule"
       unset_filt4_nofwd
+    fi
+
+    if is_captive_set; then
+      echo "Unset the captive portal"
+      unset_captive
     fi
 
     if is_fakedns_running; then
@@ -248,6 +290,11 @@ case "$1" in
   ;;
   status)
     exitcode=0
+
+    if [ "${ynh_service_enabled}" -eq 0 ]; then
+      echo "[ERR] PirateBox Service disabled"
+      exitcode=1
+    fi
 
     if ! has_hotspot_app; then
       echo "[ERR] Hotspot is not running"
@@ -269,16 +316,23 @@ case "$1" in
     fi
 
     if is_filt4_nohttps_set; then
-      echo "[OK] IPv4 No-Https filter rule set"
+      echo "[OK] IPv4 No Https-filter rule set"
     else
-      echo "[ERR] No IPv4 No-Https filter rule set"
+      echo "[ERR] No IPv4 No Https-filter rule set"
       exitcode=1
     fi
 
     if is_filt4_nofwd_set; then
-      echo "[OK] IPv4 No-Forwarding filter rule set"
+      echo "[OK] IPv4 No Forwarding-filter rule set"
     else
-      echo "[ERR] No IPv4 No-Forwarding filter rule set"
+      echo "[ERR] No IPv4 No Forwarding-filter rule set"
+      exitcode=1
+    fi
+
+    if is_captive_set; then
+      echo "[OK] Captive portal set"
+    else
+      echo "[ERR] No captive portal set"
       exitcode=1
     fi
 

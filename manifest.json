@@ -17,11 +17,37 @@
       {
         "name": "domain",
         "ask": {
-            "en": "Choose a domain",
-            "fr": "Choisissez un domaine"
+            "en": "Choose a domain for the web administration",
+            "fr": "Choisissez un domaine pour l'administration web"
+        },
+        "example": "domain.org"
+      },
+      {
+        "name": "path",
+        "ask": {
+            "en": "Choose a path for the web administration",
+            "fr": "Choissez un chemin pour l'administration web"
+        },
+        "example": "/piratebox",
+        "default": "/piratebox"
+      },
+      {
+        "name": "opt_domain",
+        "ask": {
+            "en": "Choose a fake domain pour the PirateBox",
+            "fr": "Choissez un faux domaine pour la PirateBox"
         },
         "example": "pirate.box",
         "default": "pirate.box"
+      },
+      {
+        "name": "opt_name",
+        "ask": {
+            "en": "Choose a name for the PirateBox",
+            "fr": "Choisir un nom pour la PirateBox"
+        },
+        "example": "PirateBox",
+        "default": "PirateBox"
       },
       {
         "name": "opt_deleting",

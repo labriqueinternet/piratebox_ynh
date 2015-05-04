@@ -31,9 +31,9 @@ sudo yunohost firewall disallow UDP 4253
 sudo yunohost firewall disallow TCP 4280
 
 # Remove confs
-sudo rm -f /etc/nginx/conf.d/captive-piratebox.conf
+sudo rm -f /etc/nginx/captive-piratebox.conf
 sudo rm -f "/etc/nginx/conf.d/${domain}.d/piratebox.conf"
-sudo rm -f /etc/php5/fpm/pool.d/piratebox.conf
+sudo rm -f /etc/php5/fpm/pool.d/{captive-,}piratebox.conf
 
 # Delete fakedns
 sudo rm -f /usr/local/bin/piratebox_fakedns
@@ -48,5 +48,6 @@ sudo rm -rf /var/spool/piratebox/
 
 # Remove sources
 sudo rm -rf /var/www/piratebox/
+sudo rm -rf /var/www/piratebox_admin/
 
 exit 0

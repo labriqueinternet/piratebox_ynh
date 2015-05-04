@@ -19,27 +19,29 @@
 
 # Retrieve arguments
 domain=${1}
-url_path=/piratebox
-opt_deleting=${2}
-opt_renaming=${3}
-opt_chat=${4}
+url_path=${2}
+opt_domain=${3}
+opt_name=${4}
+opt_deleting=${5}
+opt_renaming=${6}
+opt_chat=${7}
 
 if [ "${opt_deleting}" == yes ]; then
-  opt_deleting=true
+  opt_deleting=1
 else
-  opt_deleting=false
+  opt_deleting=0
 fi
 
 if [ "${opt_renaming}" == yes ]; then
-  opt_renaming=true
+  opt_renaming=1
 else
-  opt_renaming=false
+  opt_renaming=0
 fi
 
 if [ "${opt_chat}" == yes ]; then
-  opt_chat=true
+  opt_chat=1
 else
-  opt_chat=false
+  opt_chat=0
 fi
 
 # Check domain/path availability
@@ -49,6 +51,12 @@ if [ ! $? -eq 0 ]; then
 fi
 
 # Save arguments
+sudo yunohost app setting piratebox service_enabled -v 0
+sudo yunohost app setting piratebox opt_domain -v "${opt_domain}"
+sudo yunohost app setting piratebox opt_name -v "${opt_name}"
+sudo yunohost app setting piratebox opt_renaming -v "${opt_renaming}"
+sudo yunohost app setting piratebox opt_deleting -v "${opt_deleting}"
+sudo yunohost app setting piratebox opt_chat -v "${opt_chat}"
 sudo yunohost app setting piratebox wifi_device_id -v 0
 
 # Install packages
@@ -67,40 +75,61 @@ sudo mkdir -pm 0755 /var/log/nginx/
 sudo mkdir -pm 0755 /var/spool/piratebox/
 sudo chown www-data: /var/spool/piratebox/
 
-sudo install -b -o root -g root -m 0644 ../conf/nginx_captive-piratebox.conf /etc/nginx/conf.d/captive-piratebox.conf
+sudo install -b -o root -g root -m 0644 ../conf/nginx_captive-piratebox.conf /etc/nginx/captive-piratebox.conf
 sudo install -b -o root -g root -m 0644 ../conf/nginx_piratebox.conf "/etc/nginx/conf.d/${domain}.d/piratebox.conf"
 sudo install -b -o root -g root -m 0644 ../conf/phpfpm_piratebox.conf /etc/php5/fpm/pool.d/piratebox.conf
+sudo install -b -o root -g root -m 0644 ../conf/phpfpm_captive-piratebox.conf /etc/php5/fpm/pool.d/captive-piratebox.conf
 
-# Copy web sources
+# Copy web sources (piratebox)
 sudo git clone https://github.com/jvaubourg/php-piratebox.git /var/www/piratebox/
 
 sudo chown -R root: /var/www/piratebox/
 sudo chmod -R 0644 /var/www/piratebox/
 sudo find /var/www/piratebox/ -type d -exec chmod +x {} \;
 
-sudo install -b -o root -g root -m 0644 ../conf/piratebox_config.php.tpl /var/www/piratebox/config.php
+sudo rm -f /var/www/piratebox/config.php
+sudo install -b -o root -g root -m 0644 ../conf/piratebox_config.php.tpl /var/www/piratebox/config.tpl.php
+
+# Copy web sources (admin)
+sudo mkdir -pm 0755 /var/www/piratebox_admin/
+sudo cp -a ../sources/* /var/www/piratebox_admin/
+
+sudo chown -R root: /var/www/piratebox_admin/
+sudo chmod -R 0644 /var/www/piratebox_admin/*
+sudo find /var/www/piratebox_admin/ -type d -exec chmod +x {} \;
 
 # Fix permissions
 sudo chown -R www-data: /var/www/piratebox/public/uploads/
 sudo chown -R www-data: /var/www/piratebox/public/chat/
 
 # Fix php-piratebox configuration
-sudo sed 's|<TPL:NGINX_REALPATH>|/var/www/piratebox/|g' -i /var/www/piratebox/config.php
-sudo sed "s|<TPL:OPT_RENAMING>|$opt_renaming|g" -i /var/www/piratebox/config.php
-sudo sed "s|<TPL:OPT_DELETING>|$opt_deleting|g" -i /var/www/piratebox/config.php
-sudo sed "s|<TPL:OPT_CHAT>|$opt_chat|g" -i /var/www/piratebox/config.php
+sudo sed 's|<TPL:NGINX_REALPATH>|/var/www/piratebox/|g' -i /var/www/piratebox/config.tpl.php
 
 # Fix confs
-## nginx
-sudo sed "s|<TPL:DOMAIN>|${domain}|g" -i /etc/nginx/conf.d/captive-piratebox.conf
-sudo sed 's|<TPL:NGINX_REALPATH>|/var/www/piratebox/|g' -i /etc/nginx/conf.d/captive-piratebox.conf
-sudo sed 's|<TPL:PHP_NAME>|piratebox|g' -i /etc/nginx/conf.d/captive-piratebox.conf
+## nginx captive portal
+sudo sed "s|<TPL:DOMAIN>|${opt_domain}|g" -i /etc/nginx/captive-piratebox.conf
+sudo sed 's|<TPL:NGINX_REALPATH>|/var/www/piratebox/|g' -i /etc/nginx/captive-piratebox.conf
+sudo sed 's|<TPL:PHP_NAME>|piratebox|g' -i /etc/nginx/captive-piratebox.conf
 
-## php-fpm
-sudo sed 's|<TPL:PHP_NAME>|piratebox|g' -i /etc/php5/fpm/pool.d/piratebox.conf
-sudo sed 's|<TPL:PHP_USER>|www-data|g' -i /etc/php5/fpm/pool.d/piratebox.conf
-sudo sed 's|<TPL:PHP_GROUP>|www-data|g' -i /etc/php5/fpm/pool.d/piratebox.conf
-sudo sed 's|<TPL:NGINX_REALPATH>|/var/www/piratebox/|g' -i /etc/php5/fpm/pool.d/piratebox.conf
+## nginx admin
+sudo sed "s|<TPL:NGINX_LOCATION>|${url_path}|g" -i "/etc/nginx/conf.d/${domain}.d/piratebox.conf"
+sudo sed 's|<TPL:NGINX_REALPATH>|/var/www/piratebox_admin/|g' -i "/etc/nginx/conf.d/${domain}.d/piratebox.conf"
+sudo sed 's|<TPL:PHP_NAME>|piratebox_admin|g' -i "/etc/nginx/conf.d/${domain}.d/piratebox.conf"
+
+## php-fpm captive portal
+sudo sed 's|<TPL:PHP_NAME>|piratebox|g' -i /etc/php5/fpm/pool.d/captive-piratebox.conf
+sudo sed 's|<TPL:PHP_USER>|www-data|g' -i /etc/php5/fpm/pool.d/captive-piratebox.conf
+sudo sed 's|<TPL:PHP_GROUP>|www-data|g' -i /etc/php5/fpm/pool.d/captive-piratebox.conf
+sudo sed 's|<TPL:NGINX_REALPATH>|/var/www/piratebox/|g' -i /etc/php5/fpm/pool.d/captive-piratebox.conf
+
+## php-fpm admin
+sudo sed 's|<TPL:PHP_NAME>|piratebox_admin|g' -i /etc/php5/fpm/pool.d/piratebox.conf
+sudo sed 's|<TPL:PHP_USER>|admin|g' -i /etc/php5/fpm/pool.d/piratebox.conf
+sudo sed 's|<TPL:PHP_GROUP>|admins|g' -i /etc/php5/fpm/pool.d/piratebox.conf
+sudo sed 's|<TPL:NGINX_REALPATH>|/var/www/piratebox_admin/|g' -i /etc/php5/fpm/pool.d/piratebox.conf
+
+# Fix sources
+sudo sed "s|<TPL:NGINX_LOCATION>|${url_path}|g" -i /var/www/piratebox_admin/config.php
 
 # Install fakedns
 sudo install -o root -g root -m 0755 ../conf/piratebox_fakedns /usr/local/bin/
@@ -124,7 +153,6 @@ sudo yunohost service enable ynh-piratebox
 sudo service ynh-piratebox start
 
 # Update SSO
-sudo yunohost app setting piratebox skipped_uris -v /
 sudo yunohost app ssowatconf
 
 exit 0

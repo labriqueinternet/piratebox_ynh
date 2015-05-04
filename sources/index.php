@@ -1,6 +1,6 @@
 <?php
 
-/* PirateBox app for YunoHost
+/* PirateBox app for YunoHost 
  * Copyright (C) 2015 Julien Vaubourg <julien@vaubourg.com>
  * Contribute at https://github.com/jvaubourg/piratebox_ynh
  * 
@@ -18,21 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-$options = [
-  'app_name'           => "<TPL:OPT_NAME>",
+require dirname(__FILE__).'/lib/limonade.php';
+require dirname(__FILE__).'/controller.php';
+require dirname(__FILE__).'/lib/unix_func.php';
+//require '/usr/share/php/php-gettext/gettext.inc';
+require dirname(__FILE__).'/config.php';
 
-  'base_path'          => "<TPL:NGINX_REALPATH>",
-  'base_uri'           => "/",
-
-  'allow_renaming'     => <TPL:OPT_RENAMING>,
-  'allow_deleting'     => <TPL:OPT_DELETING>,
-  'allow_newfolders'   => true,
-
-  'enable_chat'        => <TPL:OPT_CHAT>,
-  'default_pseudo'     => "anonymous",
-
-  'time_format'        => "d/m/y H:i",
-  'fancyurls'          => true,
-];
-
-?>
+run();
