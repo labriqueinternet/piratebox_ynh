@@ -37,8 +37,8 @@
             "en": "Choose a fake domain pour the PirateBox",
             "fr": "Choissez un faux domaine pour la PirateBox"
         },
-        "example": "pirate.box",
-        "default": "pirate.box"
+        "example": "share.box",
+        "default": "share.box"
       },
       {
         "name": "opt_name",
@@ -46,8 +46,8 @@
             "en": "Choose a name for the PirateBox",
             "fr": "Choisir un nom pour la PirateBox"
         },
-        "example": "PirateBox",
-        "default": "PirateBox"
+        "example": "ShareBox",
+        "default": "ShareBox"
       },
       {
         "name": "opt_deleting",
