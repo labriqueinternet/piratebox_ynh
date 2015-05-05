@@ -103,7 +103,7 @@ set_captive() {
 }
 
 start_fakedns() {
-  /usr/local/bin/piratebox_fakedns "${ynh_ip4_nat_prefix}.1" 2>&1 > /dev/null &
+  (/usr/local/bin/piratebox_fakedns "${ynh_ip4_nat_prefix}.1" &> /dev/null) &
 }
 
 ## Unsetters
