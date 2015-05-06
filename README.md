@@ -12,14 +12,14 @@ Based on [php-piratebox](https://github.com/jvaubourg/php-piratebox).
 * All destinations lead to the PirateBox web page
 * No authentication required for uploading, downloading or deleting (lawless zone)
 * Of course, works without internet connection
-* [Screenshot](https://raw.githubusercontent.com/jvaubourg/piratebox_ynh/master/screenshot.png)
+* [Screenshot](https://raw.githubusercontent.com/labriqueinternet/piratebox_ynh/master/screenshot.png)
 * [Web interface features](https://github.com/jvaubourg/php-piratebox) and [more screenshots](https://github.com/jvaubourg/php-piratebox#screenshots)
 
 The YunoHost administration is only available through the wired connection.
 
 ## Requirements
 
-You have to install the [Wifi Hotspot app for YunoHost](https://github.com/jvaubourg/hotspot_ynh) before and disable the wifi secure access mode thanks to the friendly web interface.
+You have to install the [Wifi Hotspot app for YunoHost](https://github.com/labriqueinternet/hotspot_ynh) before and disable the wifi secure access mode thanks to the friendly web interface.
 
 ## How It Works ##
 
