@@ -66,7 +66,11 @@ dispatch('/', function() {
       $wifi_ssid = htmlentities($ssids[$i]);
     }
 
-    $wifi_ssid_list .= "<li $active data-device-id='$i'><a href='#'>".htmlentities($ssids[$i]).'</a></li>';
+    $wifi_ssid_list .= "<li $active data-device-id='$i'><a href='javascript:;'>".htmlentities($ssids[$i]).'</a></li>';
+  }
+
+  if(empty($wifi_ssid)) {
+    $wifi_ssid = '<em>'.T_("None").'</em>';
   }
 
   set('faststatus', service_faststatus() == 0);
