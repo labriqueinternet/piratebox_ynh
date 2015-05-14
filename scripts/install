@@ -135,7 +135,8 @@ sudo sed "s|<TPL:NGINX_LOCATION>|${url_path}|g" -i /var/www/piratebox_admin/conf
 sudo install -o root -g root -m 0755 ../conf/piratebox_fakedns /usr/local/bin/
 
 # Copy init script
-sudo install -o root -g root -m 0755 ../conf/init_ynh-piratebox /etc/init.d/ynh-piratebox
+sudo install -o root -g root -m 0755 ../conf/ynh-piratebox.service /lib/systemd/system/ynh-piratebox.service
+sudo install -o root -g root -m 0755 ../conf/ynh-piratebox /usr/local/bin/
 
 # Update firewall
 sudo yunohost firewall allow --no-upnp UDP 4253
