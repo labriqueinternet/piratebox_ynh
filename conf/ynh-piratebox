@@ -1,28 +1,19 @@
 #!/bin/bash
-### BEGIN INIT INFO
-# Provides: ynh-piratebox
-# Required-Start:    $network $remote_fs $syslog ynh-hotspot
-# Required-Stop:     $network $remote_fs $syslog ynh-hotspot
-# Default-Start:     2 3 4 5
-# Default-Stop:      0 1 6
-# Short-Description: Set prerequisites for wifi piratebox.
-# Description:       Set prerequisites for wifi piratebox.
-### END INIT INFO
 
-# PirateBox app for YunoHost 
+# PirateBox app for YunoHost
 # Copyright (C) 2015 Julien Vaubourg <julien@vaubourg.com>
 # Contribute at https://github.com/jvaubourg/piratebox_ynh
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -170,11 +161,11 @@ if [ "$1" != restart ]; then
     touch /tmp/.ynh-piratebox-boot
     systemctl restart php5-fpm --quiet
   fi
-  
+
   # Variables
-  
+
   echo -n "Retrieving Yunohost settings... "
-  
+
   ynh_service_enabled=$(moulinette_get service_enabled)
   ynh_wifi_device_id=$(moulinette_get wifi_device_id)
   ynh_opt_renaming=$(moulinette_get opt_renaming)
@@ -190,7 +181,7 @@ if [ "$1" != restart ]; then
 
   IFS='|' read -a ynh_ip4_nat_prefix <<< "$(moulinette_hotspot_get ip4_nat_prefix)"
   ynh_ip4_nat_prefix=${ynh_ip4_nat_prefix[${ynh_wifi_device_id}]}
-  
+
   echo "OK"
 fi
 
