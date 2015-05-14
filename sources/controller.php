@@ -31,17 +31,17 @@ function moulinette_hotspot_get($var) {
 }
 
 function stop_service() {
-  exec('sudo service ynh-piratebox stop');
+  exec('sudo systemctl stop ynh-piratebox --quiet');
 }
 
 function start_service() {
-  exec('sudo service ynh-piratebox start', $output, $retcode);
+  exec('sudo systemctl start ynh-piratebox --quiet', $output, $retcode);
 
   return $retcode;
 }
 
 function service_status() {
-  exec('sudo service ynh-piratebox status', $output);
+  exec('sudo systemctl is-active ynh-piratebox --quiet', $output);
 
   return $output;
 }

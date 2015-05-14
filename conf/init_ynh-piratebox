@@ -99,7 +99,7 @@ set_captive() {
 
   cp /etc/nginx/{,conf.d/}captive-piratebox.conf
 
-  service nginx reload
+  systemctl reload nginx --quiet
 }
 
 start_fakedns() {
@@ -128,7 +128,7 @@ unset_filt4_nofwd() {
 unset_captive() {
   rm -f /etc/nginx/conf.d/captive-piratebox.conf
 
-  service nginx reload
+  systemctl reload nginx --quiet
 }
 
 stop_fakedns() {
@@ -168,7 +168,7 @@ if [ "$1" != restart ]; then
   # Restart php5-fpm at the first start (it needs to be restarted after the slapd start)
   if [ ! -e /tmp/.ynh-piratebox-boot ]; then
     touch /tmp/.ynh-piratebox-boot
-    service php5-fpm restart
+    systemctl restart php5-fpm --quiet
   fi
   
   # Variables

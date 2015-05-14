@@ -145,12 +145,12 @@ sudo yunohost firewall allow --no-upnp TCP 4280
 sudo yunohost service add php5-fpm
 sudo yunohost service enable php5-fpm
 
-sudo service php5-fpm restart
-sudo service nginx reload
+sudo systemctl restart php5-fpm --quiet
+sudo systemctl reload nginx --quiet
 
 sudo yunohost service add ynh-piratebox
-sudo yunohost service enable ynh-piratebox
-sudo service ynh-piratebox start
+sudo yunohost service reenable ynh-piratebox
+sudo systemctl start ynh-piratebox --quiet
 
 # Update SSO
 sudo yunohost app ssowatconf

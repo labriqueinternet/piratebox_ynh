@@ -21,9 +21,9 @@
 domain=$(sudo yunohost app setting piratebox domain)
 
 # The End
-sudo service ynh-piratebox stop
+sudo systemctl stop ynh-piratebox --quiet
 sudo yunohost service remove ynh-piratebox
-sudo rm -f /etc/init.d/ynh-piratebox
+sudo systemctl disable ynh-piratebox --quiet
 sudo rm -f /tmp/.ynh-piratebox-*
 
 # Update firewall
@@ -41,7 +41,7 @@ sudo rm -f /usr/local/bin/piratebox_fakedns
 # Restart services
 sudo yunohost service stop php5-fpm
 sudo yunohost service start php5-fpm
-sudo service nginx reload
+sudo systemctl reload nginx --quiet
 
 # Remove tmp folder
 sudo rm -rf /var/spool/piratebox/
