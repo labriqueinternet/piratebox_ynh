@@ -90,7 +90,7 @@ set_captive() {
 
   cp /etc/nginx/{,conf.d/}captive-piratebox.conf
 
-  systemctl reload nginx --quiet
+  systemctl reload nginx
 }
 
 start_fakedns() {
@@ -119,7 +119,7 @@ unset_filt4_nofwd() {
 unset_captive() {
   rm -f /etc/nginx/conf.d/captive-piratebox.conf
 
-  systemctl reload nginx --quiet
+  systemctl reload nginx
 }
 
 stop_fakedns() {
@@ -130,26 +130,34 @@ stop_fakedns() {
 
 moulinette_get() {
   var=${1}
+  gotcha=0
 
-  value=$(yunohost app setting piratebox "${var}")
+  while [ "${gotcha}" -eq 0 ]; do
+    value=$(yunohost app setting piratebox "${var}")
 
-  if [[ "${value}" =~ "An instance is already running" ]]; then
-    echo "${value}" >&2
-    exit 1
-  fi
+    if [[ "${value}" =~ "An instance is already running" ]]; then
+      sleep $(($((RANDOM%5)) + 1))
+    else
+      gotcha=1
+    fi
+  done
 
   echo "${value}"
 }
 
 moulinette_hotspot_get() {
   var=${1}
+  gotcha=0
 
-  value=$(yunohost app setting hotspot "${var}")
+  while [ "${gotcha}" -eq 0 ]; do
+    value=$(yunohost app setting hotspot "${var}")
 
-  if [[ "${value}" =~ "An instance is already running" ]]; then
-    echo "${value}" >&2
-    exit 1
-  fi
+    if [[ "${value}" =~ "An instance is already running" ]]; then
+      sleep $(($((RANDOM%5)) + 1))
+    else
+      gotcha=1
+    fi
+  done
 
   echo "${value}"
 }
@@ -159,7 +167,20 @@ if [ "$1" != restart ]; then
   # Restart php5-fpm at the first start (it needs to be restarted after the slapd start)
   if [ ! -e /tmp/.ynh-piratebox-boot ]; then
     touch /tmp/.ynh-piratebox-boot
-    systemctl restart php5-fpm --quiet
+    systemctl restart php5-fpm
+  fi
+
+  ynh_wifi_device_id=$(moulinette_get wifi_device_id)
+
+  if [[ ! "${1}" =~ stop ]]; then
+    exitcode=0
+
+    if [ "${ynh_wifi_device_id}" -eq -1 ]; then
+      echo "[WARN] You need to select an associated wifi hotspot (you can do it through the web admin)"
+      exitcode=1
+    fi
+
+    [ "${exitcode}" -ne 0 ] && exit ${exitcode}
   fi
 
   # Variables
@@ -167,7 +188,6 @@ if [ "$1" != restart ]; then
   echo -n "Retrieving Yunohost settings... "
 
   ynh_service_enabled=$(moulinette_get service_enabled)
-  ynh_wifi_device_id=$(moulinette_get wifi_device_id)
   ynh_opt_renaming=$(moulinette_get opt_renaming)
   ynh_opt_deleting=$(moulinette_get opt_deleting)
   ynh_opt_chat=$(moulinette_get opt_chat)

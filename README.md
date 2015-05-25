@@ -1,6 +1,8 @@
 # PirateBox
 ## Overview
 
+**Warning: work in progress**
+
 PirateBox app for [YunoHost](http://yunohost.org/).
 
 Based on [php-piratebox](https://github.com/jvaubourg/php-piratebox).
@@ -17,10 +19,6 @@ Based on [php-piratebox](https://github.com/jvaubourg/php-piratebox).
 
 The YunoHost administration is only available through the wired connection.
 
-## Requirements
-
-You have to install the [Wifi Hotspot app for YunoHost](https://github.com/labriqueinternet/hotspot_ynh) before and disable the wifi secure access mode thanks to the friendly web interface.
-
 ## How It Works ##
 
 Explanations:
@@ -30,6 +28,12 @@ Explanations:
 3. a MASQUERADE rule allows the fake DNS to respond in place of the initially requested resolver,
 4. all packets to port 80 are redirected to the port 4280,
 5. a Nginx vhost listens on the port 4280, and redirects to the PirateBox web page.
+
+## Prerequisites
+
+* Debian Jessie
+* YunoHost >= 2.2.0
+* [Hotspot app for YunoHost](https://github.com/jvaubourg/hotspot_ynh)
 
 ## Limitations ##
 

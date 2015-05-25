@@ -54,11 +54,18 @@
           </div>
 
           <div class="form-group">
+            <?php if($wifi_device_id == -1): ?>
+              <div class="alert alert-dismissible alert-warning fade in" style="margin: 2px 16px 17px" role="alert">
+                <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <strong><?= T_('Notice') ?>:</strong> <?= T_("You need to select an associated hotspot.") ?>
+              </div>
+            <?php endif; ?>
+
             <label for="wifi_device_id" class="col-sm-3 control-label"><?= T_('Associated Hotspot') ?></label>
             <div class="col-sm-9 input-group-btn">
               <div class="input-group">
                   <input type="text" name="wifi_device_id" id="wifi_device_id" value="<?= $wifi_device_id ?>" style="display: none" />
-                  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><?= $wifi_ssid ?> <span class="caret"></span></button>
+                  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><?= empty($wifi_ssid) ? '<em>'.T_("None").'</em>' : $wifi_ssid ?> <span class="caret"></span></button>
                   <ul class="dropdown-menu dropdown-menu-left" id="deviceidlist" role="menu">
                     <?= $wifi_ssid_list ?>
                   </ul>

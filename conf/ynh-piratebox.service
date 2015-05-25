@@ -1,15 +1,13 @@
 [Unit]
-Description=YunoHost PirteBox (ShareBox).
-Requires=network.target
-After=network.target
+Description=YunoHost PirateBox.
+Requires=ynh-hotspot.service
+After=ynh-hotspot.service
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/bin/ynh-pirtebox start
-ExecRestart=/usr/local/bin/ynh-pirtebox restart
-ExecStop=/usr/local/bin/ynh-pirtebox stop
+ExecStart=/usr/local/bin/ynh-piratebox start
+ExecStop=/usr/local/bin/ynh-piratebox stop
 RemainAfterExit=yes
 
 [Install]
 WantedBy=multi-user.target
-Alias=ynh-piratebox.service

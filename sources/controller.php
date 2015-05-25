@@ -31,17 +31,17 @@ function moulinette_hotspot_get($var) {
 }
 
 function stop_service() {
-  exec('sudo systemctl stop ynh-piratebox --quiet');
+  exec('sudo systemctl stop ynh-piratebox');
 }
 
 function start_service() {
-  exec('sudo systemctl start ynh-piratebox --quiet', $output, $retcode);
+  exec('sudo systemctl start ynh-piratebox', $output, $retcode);
 
   return $retcode;
 }
 
 function service_status() {
-  exec('sudo systemctl is-active ynh-piratebox --quiet', $output);
+  exec('sudo ynh-piratebox status', $output);
 
   return $output;
 }
@@ -69,10 +69,6 @@ dispatch('/', function() {
     $wifi_ssid_list .= "<li $active data-device-id='$i'><a href='javascript:;'>".htmlentities($ssids[$i]).'</a></li>';
   }
 
-  if(empty($wifi_ssid)) {
-    $wifi_ssid = '<em>'.T_("None").'</em>';
-  }
-
   set('faststatus', service_faststatus() == 0);
   set('service_enabled', moulinette_get('service_enabled'));
   set('wifi_device_id', $wifi_device_id);
@@ -96,6 +92,10 @@ dispatch_put('/settings', function() {
 
       if(empty($_POST['opt_name'])) {
         throw new Exception(T_('The name cannot be empty'));
+      }
+
+      if($_POST['wifi_device_id'] == -1) {
+        throw new Exception(T_('You need to select an associated hotspot'));
       }
 
     } catch(Exception $e) {
