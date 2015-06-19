@@ -57,7 +57,7 @@ sudo yunohost app setting piratebox opt_name -v "${opt_name}"
 sudo yunohost app setting piratebox opt_renaming -v "${opt_renaming}"
 sudo yunohost app setting piratebox opt_deleting -v "${opt_deleting}"
 sudo yunohost app setting piratebox opt_chat -v "${opt_chat}"
-sudo yunohost app setting piratebox wifi_device_id -v 0
+sudo yunohost app setting piratebox wifi_device_id -v -1
 
 # Install packages
 packages='php5-fpm iptables libnet-dns-perl git'
@@ -135,24 +135,25 @@ sudo sed "s|<TPL:NGINX_LOCATION>|${url_path}|g" -i /var/www/piratebox_admin/conf
 sudo install -o root -g root -m 0755 ../conf/piratebox_fakedns /usr/local/bin/
 
 # Copy init script
-sudo install -o root -g root -m 0755 ../conf/init_ynh-piratebox /etc/init.d/ynh-piratebox
+sudo install -o root -g root -m 0755 ../conf/ynh-piratebox /usr/local/bin/
+sudo install -o root -g root -m 0644 ../conf/ynh-piratebox.service /etc/systemd/system/
 
 # Update firewall
 sudo yunohost firewall allow --no-upnp UDP 4253
 sudo yunohost firewall allow --no-upnp TCP 4280
 
 # Set default inits
-sudo yunohost service add php5-fpm
-sudo yunohost service enable php5-fpm
+sudo systemctl enable php5-fpm
+sudo systemctl restart php5-fpm
 
-sudo service php5-fpm restart
-sudo service nginx reload
+sudo systemctl reload nginx
 
-sudo yunohost service add ynh-piratebox
-sudo yunohost service enable ynh-piratebox
-sudo service ynh-piratebox start
+sudo systemctl enable ynh-piratebox
+sudo systemctl start ynh-piratebox
 
 # Update SSO
 sudo yunohost app ssowatconf
+
+echo "WARNING: PirateBox is not started because you need to define an associated wifi hotspot through the web admin" >&2
 
 exit 0

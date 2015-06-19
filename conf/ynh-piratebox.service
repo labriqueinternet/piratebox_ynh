@@ -1,0 +1,13 @@
+[Unit]
+Description=YunoHost PirateBox.
+Requires=ynh-hotspot.service
+After=ynh-hotspot.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/ynh-piratebox start
+ExecStop=/usr/local/bin/ynh-piratebox stop
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

@@ -25,6 +25,7 @@ sub reply_handler {
  
 my $ns = new Net::DNS::Nameserver(
   LocalPort    => 4253,
+  LocalAddr    => $ip4_addr,
   ReplyHandler => \&reply_handler,
   Verbose      => 0
   ) || die "Couldn't create fake nameserver object.\n";

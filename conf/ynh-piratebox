@@ -1,28 +1,19 @@
 #!/bin/bash
-### BEGIN INIT INFO
-# Provides: ynh-piratebox
-# Required-Start:    $network $remote_fs $syslog ynh-hotspot
-# Required-Stop:     $network $remote_fs $syslog ynh-hotspot
-# Default-Start:     2 3 4 5
-# Default-Stop:      0 1 6
-# Short-Description: Set prerequisites for wifi piratebox.
-# Description:       Set prerequisites for wifi piratebox.
-### END INIT INFO
 
-# PirateBox app for YunoHost 
+# PirateBox app for YunoHost
 # Copyright (C) 2015 Julien Vaubourg <julien@vaubourg.com>
 # Contribute at https://github.com/jvaubourg/piratebox_ynh
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -99,7 +90,7 @@ set_captive() {
 
   cp /etc/nginx/{,conf.d/}captive-piratebox.conf
 
-  service nginx reload
+  systemctl reload nginx
 }
 
 start_fakedns() {
@@ -128,7 +119,7 @@ unset_filt4_nofwd() {
 unset_captive() {
   rm -f /etc/nginx/conf.d/captive-piratebox.conf
 
-  service nginx reload
+  systemctl reload nginx
 }
 
 stop_fakedns() {
@@ -139,26 +130,34 @@ stop_fakedns() {
 
 moulinette_get() {
   var=${1}
+  gotcha=0
 
-  value=$(yunohost app setting piratebox "${var}")
+  while [ "${gotcha}" -eq 0 ]; do
+    value=$(yunohost app setting piratebox "${var}")
 
-  if [[ "${value}" =~ "An instance is already running" ]]; then
-    echo "${value}" >&2
-    exit 1
-  fi
+    if [[ "${value}" =~ "An instance is already running" ]]; then
+      sleep $(($((RANDOM%5)) + 1))
+    else
+      gotcha=1
+    fi
+  done
 
   echo "${value}"
 }
 
 moulinette_hotspot_get() {
   var=${1}
+  gotcha=0
 
-  value=$(yunohost app setting hotspot "${var}")
+  while [ "${gotcha}" -eq 0 ]; do
+    value=$(yunohost app setting hotspot "${var}")
 
-  if [[ "${value}" =~ "An instance is already running" ]]; then
-    echo "${value}" >&2
-    exit 1
-  fi
+    if [[ "${value}" =~ "An instance is already running" ]]; then
+      sleep $(($((RANDOM%5)) + 1))
+    else
+      gotcha=1
+    fi
+  done
 
   echo "${value}"
 }
@@ -168,15 +167,27 @@ if [ "$1" != restart ]; then
   # Restart php5-fpm at the first start (it needs to be restarted after the slapd start)
   if [ ! -e /tmp/.ynh-piratebox-boot ]; then
     touch /tmp/.ynh-piratebox-boot
-    service php5-fpm restart
+    systemctl restart php5-fpm
   fi
-  
-  # Variables
-  
-  echo -n "Retrieving Yunohost settings... "
-  
-  ynh_service_enabled=$(moulinette_get service_enabled)
+
   ynh_wifi_device_id=$(moulinette_get wifi_device_id)
+
+  if [[ ! "${1}" =~ stop ]]; then
+    exitcode=0
+
+    if [ "${ynh_wifi_device_id}" -eq -1 ]; then
+      echo "[WARN] You need to select an associated wifi hotspot (you can do it through the web admin)"
+      exitcode=1
+    fi
+
+    [ "${exitcode}" -ne 0 ] && exit ${exitcode}
+  fi
+
+  # Variables
+
+  echo -n "Retrieving Yunohost settings... "
+
+  ynh_service_enabled=$(moulinette_get service_enabled)
   ynh_opt_renaming=$(moulinette_get opt_renaming)
   ynh_opt_deleting=$(moulinette_get opt_deleting)
   ynh_opt_chat=$(moulinette_get opt_chat)
@@ -190,7 +201,7 @@ if [ "$1" != restart ]; then
 
   IFS='|' read -a ynh_ip4_nat_prefix <<< "$(moulinette_hotspot_get ip4_nat_prefix)"
   ynh_ip4_nat_prefix=${ynh_ip4_nat_prefix[${ynh_wifi_device_id}]}
-  
+
   echo "OK"
 fi
 
