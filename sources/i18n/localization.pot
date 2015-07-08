@@ -1,0 +1,103 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-07-08 19:58+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: sources/views/layout.html.php:27 sources/views/settings.html.php:80
+msgid "PirateBox"
+msgstr ""
+
+#: sources/views/layout.html.php:49
+msgid "Error"
+msgstr ""
+
+#: sources/views/layout.html.php:54 sources/views/settings.html.php:60
+msgid "Notice"
+msgstr ""
+
+#: sources/views/layout.html.php:66
+msgid "Any problem? Contribute!"
+msgstr ""
+
+#: sources/views/settings.html.php:20
+msgid "PirateBox Configuration"
+msgstr ""
+
+#: sources/views/settings.html.php:22 sources/views/settings.html.php:24
+msgid ""
+"This is a fast status. Click on More details to show the complete status."
+msgstr ""
+
+#: sources/views/settings.html.php:22
+msgid "Running"
+msgstr ""
+
+#: sources/views/settings.html.php:24
+msgid "Not Running"
+msgstr ""
+
+#: sources/views/settings.html.php:27
+msgid "Loading complete status may take a few minutes. Be patient."
+msgstr ""
+
+#: sources/views/settings.html.php:27
+msgid "More details"
+msgstr ""
+
+#: sources/views/settings.html.php:43
+msgid "Service"
+msgstr ""
+
+#: sources/views/settings.html.php:48
+msgid "PirateBox Enabled"
+msgstr ""
+
+#: sources/views/settings.html.php:60
+msgid "You need to select an associated hotspot."
+msgstr ""
+
+#: sources/views/settings.html.php:64
+msgid "Associated Hotspot"
+msgstr ""
+
+#: sources/views/settings.html.php:68
+msgid "None"
+msgstr ""
+
+#: sources/views/settings.html.php:85
+msgid "Name"
+msgstr ""
+
+#: sources/views/settings.html.php:92
+msgid "Renaming Allowed"
+msgstr ""
+
+#: sources/views/settings.html.php:101
+msgid "Deleting Allowed"
+msgstr ""
+
+#: sources/views/settings.html.php:110
+msgid "Chat Enabled"
+msgstr ""
+
+#: sources/views/settings.html.php:122
+msgid "Reloading may take a few minutes. Be patient."
+msgstr ""
+
+#: sources/views/settings.html.php:122
+msgid "Save and reload"
+msgstr ""
