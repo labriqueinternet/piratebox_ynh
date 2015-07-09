@@ -1,0 +1,104 @@
+# French translations for data package
+# Traductions franÃ§aises du paquet data.
+# Copyright (C) 2015 THE data'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the data package.
+# Automatically generated, 2015.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: data 2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-07-08 19:58+0200\n"
+"PO-Revision-Date: 2015-07-09 00:09+0100\n"
+"Last-Translator: samy boutayeb <samy@langues-etcetera.fr>\n"
+"Language-Team: none\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 1.7.7\n"
+
+#: sources/views/layout.html.php:27 sources/views/settings.html.php:80
+msgid "PirateBox"
+msgstr "PirateBox"
+
+#: sources/views/layout.html.php:49
+msgid "Error"
+msgstr "Erreur"
+
+#: sources/views/layout.html.php:54 sources/views/settings.html.php:60
+msgid "Notice"
+msgstr "Notice"
+
+#: sources/views/layout.html.php:66
+msgid "Any problem? Contribute!"
+msgstr "Un souci ? Contribuez !"
+
+#: sources/views/settings.html.php:20
+msgid "PirateBox Configuration"
+msgstr "Configuration de la PirateBox"
+
+#: sources/views/settings.html.php:22 sources/views/settings.html.php:24
+msgid "This is a fast status. Click on More details to show the complete status."
+msgstr "Ceci est un rÃ©sumÃ© du statut. Cliquez sur Plus de dÃ©tails pour consulter l'intÃ©gralitÃ© du statut."
+
+#: sources/views/settings.html.php:22
+msgid "Running"
+msgstr "En cours d'exÃ©cution"
+
+#: sources/views/settings.html.php:24
+msgid "Not Running"
+msgstr "Eteint"
+
+#: sources/views/settings.html.php:27
+msgid "Loading complete status may take a few minutes. Be patient."
+msgstr "Le chargement du statut peut prendre quelques minutes. Soyez patient."
+
+#: sources/views/settings.html.php:27
+msgid "More details"
+msgstr "Plus de dÃ©tails"
+
+#: sources/views/settings.html.php:43
+msgid "Service"
+msgstr "Service"
+
+#: sources/views/settings.html.php:48
+msgid "PirateBox Enabled"
+msgstr "PirateBox activÃ©e"
+
+#: sources/views/settings.html.php:60
+msgid "You need to select an associated hotspot."
+msgstr "Choisissez un point d'accÃšs associÃ©."
+
+#: sources/views/settings.html.php:64
+msgid "Associated Hotspot"
+msgstr "Point d'accÃšs associÃ©"
+
+#: sources/views/settings.html.php:68
+msgid "None"
+msgstr "Aucun"
+
+#: sources/views/settings.html.php:85
+msgid "Name"
+msgstr "Nom"
+
+#: sources/views/settings.html.php:92
+msgid "Renaming Allowed"
+msgstr "Renommer autorisÃ©"
+
+#: sources/views/settings.html.php:101
+msgid "Deleting Allowed"
+msgstr "SupprimÃ© autorisÃ©"
+
+#: sources/views/settings.html.php:110
+msgid "Chat Enabled"
+msgstr "Chat autorisÃ©"
+
+#: sources/views/settings.html.php:122
+msgid "Reloading may take a few minutes. Be patient."
+msgstr "Le rechargement peut prendre quelques minutes. Soyez patient."
+
+#: sources/views/settings.html.php:122
+msgid "Save and reload"
+msgstr "Sauvegarder et recharger"
