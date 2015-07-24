@@ -1,52 +1,30 @@
 #!/bin/bash
 
-APP=piratebox
-OWNER=labriqueinternet
-SERVICE="ynh-${APP}"
-REPO="${APP}_ynh"
+ynh_setting() {
+  app=${1}
+  setting=${2}
 
-ARGS='domain path opt_domain opt_name opt_deleting opt_renaming opt_chat'
+  sudo grep "^${setting}:" "/etc/yunohost/apps/${app}/settings.yml" | sed s/^[^:]\\+:\\s*[\"\']\\?// | sed s/\\s*[\"\']\$//
+}
 
-install_time=$(sudo yunohost app setting "${APP}" install_time)
-install_isotime=$(date -Iseconds --date="@${install_time}")
-
-commits=$(sudo curl -s "https://api.github.com/repos/${OWNER}/${REPO}/commits?since=${install_isotime}" | wc -l)
-commits_upstream=$(sudo curl -s "https://api.github.com/repos/jvaubourg/php-piratebox/commits?since=${install_isotime}" | wc -l)
-
-if [ "${commits}" -le 3 -a "${commits_upstream}" -le 3 ]; then
-  echo "${APP}: Up-to-date"
-  exit 0
-fi
-
-for i in ${ARGS}; do
-  value=$(sudo yunohost app setting "${APP}" "${i}")
-  value=$(php -r "echo rawurlencode('$value');")
-
-  args_url="${args_url}&${i}=${value}"
-done
+domain=$(ynh_setting piratebox domain)
+path=$(ynh_setting piratebox path)
+opt_domain=$(ynh_setting piratebox opt_domain)
+opt_name=$(ynh_setting piratebox opt_name)
+opt_deleting=$(ynh_setting piratebox opt_deleting)
+opt_renaming=$(ynh_setting piratebox opt_renaming)
+opt_chat=$(ynh_setting piratebox opt_chat)
 
 tmpdir=$(mktemp -dp /tmp/ "${APP}-upgrade-XXXXX")
-tmpdir_uploads=$(mktemp -dp /var/www/ "${APP}-upgrade-XXXXX")
+sudo mv /var/www/piratebox/public/uploads/ "${tmpdir}/"
 
-sudo systemctl stop "${SERVICE}"
+export PIRATEBOX_UPGRADE=1
+sudo bash /etc/yunohost/apps/piratebox/scripts/remove
+bash ./install "${domain}" "${path}" "${opt_domain}" "${opt_name}" "${opt_deleting}" "${opt_renaming}" "${opt_chat}"
 
-sudo cp -a "/etc/yunohost/apps/${APP}/settings.yml" "${tmpdir}/"
-sudo mv /var/www/piratebox/public/uploads/ "${tmpdir_uploads}/"
+sudo mv "${tmpdir}/uploads/"* /var/www/piratebox/public/uploads/ 2> /dev/null
+sudo rm -r "${tmpdir}/"
 
-sudo yunohost app remove "${APP}"
-sudo yunohost app install "https://github.com/${OWNER}/${REPO}" --args "${args_url}"
-
-sudo systemctl stop "${SERVICE}"
-
-install_time=$(sudo yunohost app setting "${APP}" install_time)
-
-sudo cp -a "${tmpdir}/settings.yml" "/etc/yunohost/apps/${APP}/"
-sudo mv "${tmpdir_uploads}/uploads/"* /var/www/piratebox/public/uploads/ 2> /dev/null
-
-sudo yunohost app setting "${APP}" install_time -v "${install_time}"
-
-sudo systemctl start "${SERVICE}"
-
-sudo rm -r "${tmpdir}/" "${tmpdir_uploads}/"
+sudo systemctl start ynh-piratebox
 
 exit 0

@@ -17,6 +17,9 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# This is an upgrade?
+upgrade=$([ "$PIRATEBOX_UPGRADE" == 1 ] && echo true || echo false)
+
 # Retrieve arguments
 domain=${1}
 url_path=${2}
@@ -44,20 +47,24 @@ else
   opt_chat=0
 fi
 
-# Check domain/path availability
-sudo yunohost app checkurl ${domain}${url_path} -a piratebox
-if [ ! $? -eq 0 ]; then
-  exit 1
-fi
+if ! $upgrade; then
 
-# Save arguments
-sudo yunohost app setting piratebox service_enabled -v 0
-sudo yunohost app setting piratebox opt_domain -v "${opt_domain}"
-sudo yunohost app setting piratebox opt_name -v "${opt_name}"
-sudo yunohost app setting piratebox opt_renaming -v "${opt_renaming}"
-sudo yunohost app setting piratebox opt_deleting -v "${opt_deleting}"
-sudo yunohost app setting piratebox opt_chat -v "${opt_chat}"
-sudo yunohost app setting piratebox wifi_device_id -v -1
+  # Check domain/path availability
+  sudo yunohost app checkurl ${domain}${url_path} -a piratebox
+  if [ ! $? -eq 0 ]; then
+    exit 1
+  fi
+  
+  # Save arguments
+  sudo yunohost app setting piratebox service_enabled -v 0
+  sudo yunohost app setting piratebox opt_domain -v "${opt_domain}"
+  sudo yunohost app setting piratebox opt_name -v "${opt_name}"
+  sudo yunohost app setting piratebox opt_renaming -v "${opt_renaming}"
+  sudo yunohost app setting piratebox opt_deleting -v "${opt_deleting}"
+  sudo yunohost app setting piratebox opt_chat -v "${opt_chat}"
+  sudo yunohost app setting piratebox wifi_device_id -v -1
+
+fi
 
 # Install packages
 packages='php5-fpm iptables libnet-dns-perl git'
@@ -149,11 +156,14 @@ sudo systemctl restart php5-fpm
 sudo systemctl reload nginx
 
 sudo systemctl enable ynh-piratebox
-sudo systemctl start ynh-piratebox
+sudo yunohost service add ynh-piratebox
 
-# Update SSO
+if ! $upgrade; then
+  sudo systemctl start ynh-piratebox
+
+  echo "WARNING: PirateBox is not started because you need to define an associated wifi hotspot through the web admin" >&2
+fi
+
 sudo yunohost app ssowatconf
-
-echo "WARNING: PirateBox is not started because you need to define an associated wifi hotspot through the web admin" >&2
 
 exit 0

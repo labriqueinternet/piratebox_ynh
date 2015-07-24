@@ -23,6 +23,7 @@ domain=$(sudo yunohost app setting piratebox domain)
 # The End
 sudo systemctl stop ynh-piratebox
 sudo systemctl disable ynh-piratebox
+sudo yunohost service remove ynh-piratebox
 sudo rm -f /etc/systemd/system/ynh-piratebox.service /usr/local/bin/ynh-piratebox
 sudo rm -f /tmp/.ynh-piratebox-*
 
