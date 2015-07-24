@@ -128,38 +128,19 @@ stop_fakedns() {
 
 ## Tools
 
-moulinette_get() {
-  var=${1}
-  gotcha=0
+ynh_setting_get() {
+  app=${1}
+  setting=${2}
 
-  while [ "${gotcha}" -eq 0 ]; do
-    value=$(yunohost app setting piratebox "${var}")
-
-    if [[ "${value}" =~ "An instance is already running" ]]; then
-      sleep $(($((RANDOM%5)) + 1))
-    else
-      gotcha=1
-    fi
-  done
-
-  echo "${value}"
+  grep "^${setting}:" "/etc/yunohost/apps/${app}/settings.yml" | sed s/^[^:]\\+:\\s*[\"\']\\?// | sed s/\\s*[\"\']\$//
 }
 
-moulinette_hotspot_get() {
-  var=${1}
-  gotcha=0
+ynh_setting_set() {
+  app=${1}
+  setting=${2}
+  value=${3}
 
-  while [ "${gotcha}" -eq 0 ]; do
-    value=$(yunohost app setting hotspot "${var}")
-
-    if [[ "${value}" =~ "An instance is already running" ]]; then
-      sleep $(($((RANDOM%5)) + 1))
-    else
-      gotcha=1
-    fi
-  done
-
-  echo "${value}"
+  yunohost app setting "${app}" "${setting}" -v "${value}"
 }
 
 if [ "$1" != restart ]; then
@@ -170,7 +151,7 @@ if [ "$1" != restart ]; then
     systemctl restart php5-fpm
   fi
 
-  ynh_wifi_device_id=$(moulinette_get wifi_device_id)
+  ynh_wifi_device_id=$(ynh_setting_get piratebox wifi_device_id)
 
   if [[ ! "${1}" =~ stop ]]; then
     exitcode=0
@@ -187,19 +168,19 @@ if [ "$1" != restart ]; then
 
   echo -n "Retrieving Yunohost settings... "
 
-  ynh_service_enabled=$(moulinette_get service_enabled)
-  ynh_opt_renaming=$(moulinette_get opt_renaming)
-  ynh_opt_deleting=$(moulinette_get opt_deleting)
-  ynh_opt_chat=$(moulinette_get opt_chat)
-  ynh_opt_name=$(moulinette_get opt_name)
+  ynh_service_enabled=$(ynh_setting_get piratebox service_enabled)
+  ynh_opt_renaming=$(ynh_setting_get piratebox opt_renaming)
+  ynh_opt_deleting=$(ynh_setting_get piratebox opt_deleting)
+  ynh_opt_chat=$(ynh_setting_get piratebox opt_chat)
+  ynh_opt_name=$(ynh_setting_get piratebox opt_name)
 
   if [ "${ynh_wifi_device_id}" -eq 0 ]; then
-    ynh_wifi_device="$(moulinette_hotspot_get wifi_device)"
+    ynh_wifi_device="$(ynh_setting_get hotspot wifi_device)"
   else
     ynh_wifi_device="hotspot${ynh_wifi_device_id}"
   fi
 
-  IFS='|' read -a ynh_ip4_nat_prefix <<< "$(moulinette_hotspot_get ip4_nat_prefix)"
+  IFS='|' read -a ynh_ip4_nat_prefix <<< "$(ynh_setting_get hotspot ip4_nat_prefix)"
   ynh_ip4_nat_prefix=${ynh_ip4_nat_prefix[${ynh_wifi_device_id}]}
 
   echo "OK"

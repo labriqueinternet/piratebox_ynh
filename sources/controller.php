@@ -18,16 +18,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function moulinette_get($var) {
-  return htmlspecialchars(exec('sudo yunohost app setting piratebox '.escapeshellarg($var)));
+function ynh_setting_get($setting, $app = 'piratebox') {
+  $value = exec("sudo grep \"^$setting:\" /etc/yunohost/apps/$app/settings.yml");
+  $value = preg_replace('/^[^:]+:\s*["\']?/', '', $value);
+  $value = preg_replace('/\s*["\']$/', '', $value);
+
+  return htmlspecialchars($value);
 }
 
-function moulinette_set($var, $value) {
-  return exec('sudo yunohost app setting piratebox '.escapeshellarg($var).' -v '.escapeshellarg($value));
-}
-
-function moulinette_hotspot_get($var) {
-  return htmlspecialchars(exec('sudo yunohost app setting hotspot '.escapeshellarg($var)));
+function ynh_setting_set($setting, $value) {
+  return exec('sudo yunohost app setting piratebox '.escapeshellarg($setting).' -v '.escapeshellarg($value));
 }
 
 function stop_service() {
@@ -53,8 +53,8 @@ function service_faststatus() {
 }
 
 dispatch('/', function() {
-  $ssids = explode('|', moulinette_hotspot_get('wifi_ssid'));
-  $wifi_device_id = moulinette_get('wifi_device_id');
+  $ssids = explode('|', ynh_setting_get('wifi_ssid', 'hotspot'));
+  $wifi_device_id = ynh_setting_get('wifi_device_id');
   $wifi_ssid_list = '';
   $wifi_ssid = '';
 
@@ -70,15 +70,15 @@ dispatch('/', function() {
   }
 
   set('faststatus', service_faststatus() == 0);
-  set('service_enabled', moulinette_get('service_enabled'));
+  set('service_enabled', ynh_setting_get('service_enabled'));
   set('wifi_device_id', $wifi_device_id);
   set('wifi_ssid', $wifi_ssid);
   set('wifi_ssid_list', $wifi_ssid_list);
-  set('opt_renaming', moulinette_get('opt_renaming'));
-  set('opt_deleting', moulinette_get('opt_deleting'));
-  set('opt_chat', moulinette_get('opt_chat'));
-  set('opt_name', moulinette_get('opt_name'));
-  set('opt_domain', moulinette_get('opt_domain'));
+  set('opt_renaming', ynh_setting_get('opt_renaming'));
+  set('opt_deleting', ynh_setting_get('opt_deleting'));
+  set('opt_chat', ynh_setting_get('opt_chat'));
+  set('opt_name', ynh_setting_get('opt_name'));
+  set('opt_domain', ynh_setting_get('opt_domain'));
 
   return render('settings.html.php');
 });
@@ -106,14 +106,14 @@ dispatch_put('/settings', function() {
 
   stop_service();
   
-  moulinette_set('service_enabled', $service_enabled);
+  ynh_setting_set('service_enabled', $service_enabled);
 
   if($service_enabled == 1) {
-    moulinette_set('opt_name', $_POST['opt_name']);
-    moulinette_set('opt_renaming', isset($_POST['opt_renaming']) ? 1 : 0);
-    moulinette_set('opt_deleting', isset($_POST['opt_deleting']) ? 1 : 0);
-    moulinette_set('opt_chat', isset($_POST['opt_chat']) ? 1 : 0);
-    moulinette_set('wifi_device_id', $_POST['wifi_device_id']);
+    ynh_setting_set('opt_name', $_POST['opt_name']);
+    ynh_setting_set('opt_renaming', isset($_POST['opt_renaming']) ? 1 : 0);
+    ynh_setting_set('opt_deleting', isset($_POST['opt_deleting']) ? 1 : 0);
+    ynh_setting_set('opt_chat', isset($_POST['opt_chat']) ? 1 : 0);
+    ynh_setting_set('wifi_device_id', $_POST['wifi_device_id']);
 
     $retcode = start_service();
 
