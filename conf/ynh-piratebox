@@ -85,6 +85,7 @@ set_captive() {
 
   sed -i "s|<TPL:OPT_NAME>|${ynh_opt_name}|" -i /var/www/piratebox/config.php
   sed -i "s|<TPL:OPT_RENAMING>|${ynh_opt_renaming}|" -i /var/www/piratebox/config.php
+  sed -i "s|<TPL:OPT_MAXSPACE>|${ynh_opt_maxspace}|" -i /var/www/piratebox/config.php
   sed -i "s|<TPL:OPT_DELETING>|${ynh_opt_deleting}|" -i /var/www/piratebox/config.php
   sed -i "s|<TPL:OPT_CHAT>|${ynh_opt_chat}|" -i /var/www/piratebox/config.php
 
@@ -170,6 +171,7 @@ if [ "$1" != restart ]; then
 
   ynh_service_enabled=$(ynh_setting_get piratebox service_enabled)
   ynh_opt_renaming=$(ynh_setting_get piratebox opt_renaming)
+  ynh_opt_maxspace=$(ynh_setting_get piratebox opt_maxspace)
   ynh_opt_deleting=$(ynh_setting_get piratebox opt_deleting)
   ynh_opt_chat=$(ynh_setting_get piratebox opt_chat)
   ynh_opt_name=$(ynh_setting_get piratebox opt_name)

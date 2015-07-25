@@ -25,6 +25,12 @@ bash ./install "${domain}" "${path}" "${opt_domain}" "${opt_name}" "${opt_deleti
 sudo mv "${tmpdir}/uploads/"* /var/www/piratebox/public/uploads/ 2> /dev/null
 sudo rm -r "${tmpdir}/"
 
+# Changes
+
+if [ "$(ynh_setting piratebox opt_maxspace)" == '' ]; then
+  sudo yunohost app setting piratebox opt_maxspace -v 90
+fi
+
 sudo systemctl start ynh-piratebox
 
 exit 0

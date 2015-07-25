@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: data 2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-07-25 10:54+0200\n"
-"PO-Revision-Date: 2015-07-25 10:57+0100\n"
+"POT-Creation-Date: 2015-07-25 13:10+0200\n"
+"PO-Revision-Date: 2015-07-25 13:11+0100\n"
 "Last-Translator: samy boutayeb <samy@langues-etcetera.fr>\n"
 "Language-Team: none\n"
 "Language: fr\n"
@@ -19,20 +19,44 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Poedit 1.6.10\n"
 
-#: sources/views/layout.html.php:27 sources/views/settings.html.php:80
-#: sources/controller.php:102
+#: sources/controller.php:95
+msgid "The name cannot be empty"
+msgstr "Le nom ne peut pas être vide"
+
+#: sources/controller.php:99
+msgid "You need to select an associated hotspot"
+msgstr "Vous devez choisir un point d'accès à associer"
+
+#: sources/controller.php:103 sources/views/layout.html.php:27
+#: sources/views/settings.html.php:80
 msgid "PirateBox"
 msgstr "PirateBox"
 
-#: sources/views/layout.html.php:49
+#: sources/controller.php:103
+msgid "configuration not updated"
+msgstr "configuration non-mise à jour"
+
+#: sources/controller.php:123
+msgid "Configuration updated and service successfully reloaded"
+msgstr "Configuration mise à jour et service rechargé avec succès"
+
+#: sources/controller.php:125
+msgid "Configuration updated but service reload failed"
+msgstr "Configuration mise à jour mais le rechargement du service a échoué"
+
+#: sources/controller.php:129
+msgid "Service successfully disabled"
+msgstr "Service désactivé avec succès"
+
+#: sources/views/layout.html.php:51
 msgid "Error"
 msgstr "Erreur"
 
-#: sources/views/layout.html.php:54 sources/views/settings.html.php:60
+#: sources/views/layout.html.php:56 sources/views/settings.html.php:60
 msgid "Notice"
 msgstr "Notice"
 
-#: sources/views/layout.html.php:66
+#: sources/views/layout.html.php:68
 msgid "Any problem? Contribute!"
 msgstr "Un problème ? Contribuez !"
 
@@ -88,45 +112,31 @@ msgid "Name"
 msgstr "Nom"
 
 #: sources/views/settings.html.php:92
+msgid "Maximum space occupied on the partition where the PirateBox data are"
+msgstr ""
+"Espace maximum occupé sur la partition sur laquelle les données de la "
+"PirateBox se trouvent"
+
+#: sources/views/settings.html.php:92
+msgid "Maximum Space"
+msgstr "Espace maximum"
+
+#: sources/views/settings.html.php:99
 msgid "Renaming Allowed"
 msgstr "Renommage autorisé"
 
-#: sources/views/settings.html.php:101
+#: sources/views/settings.html.php:108
 msgid "Deleting Allowed"
 msgstr "Suppression autorisée"
 
-#: sources/views/settings.html.php:110
+#: sources/views/settings.html.php:117
 msgid "Chat Enabled"
 msgstr "Chat autorisé"
 
-#: sources/views/settings.html.php:122
+#: sources/views/settings.html.php:129
 msgid "Reloading may take a few minutes. Be patient."
 msgstr "Le rechargement peut prendre quelques minutes. Soyez patient."
 
-#: sources/views/settings.html.php:122
+#: sources/views/settings.html.php:129
 msgid "Save and reload"
 msgstr "Sauvegarder et recharger"
-
-#: sources/controller.php:94
-msgid "The name cannot be empty"
-msgstr "Le nom ne peut pas être vide"
-
-#: sources/controller.php:98
-msgid "You need to select an associated hotspot"
-msgstr "Vous devez choisir un point d'accès à associer"
-
-#: sources/controller.php:102
-msgid "configuration not updated"
-msgstr "configuration non-mise à jour"
-
-#: sources/controller.php:121
-msgid "Configuration updated and service successfully reloaded"
-msgstr "Configuration mise à jour et service rechargé avec succès"
-
-#: sources/controller.php:123
-msgid "Configuration updated but service reload failed"
-msgstr "Configuration mise à jour mais le rechargement du service a échoué"
-
-#: sources/controller.php:127
-msgid "Service successfully disabled"
-msgstr "Service désactivé avec succès"

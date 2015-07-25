@@ -84,7 +84,14 @@
           <div class="form-group">
             <label for="opt_name" class="col-sm-3 control-label"><?= _('Name') ?></label>
             <div class="col-sm-9">
-              <input type="text" class="form-control" name="opt_name" id="opt_name" placeholder="PirateBox" value="<?= htmlentities($opt_name) ?>" />
+              <input type="text" class="form-control" name="opt_name" id="opt_name" placeholder="ShareBox" value="<?= htmlentities($opt_name) ?>" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="opt_maxspace" class="col-sm-3 control-label" data-toggle="tooltip" data-title="<?= _('Maximum space occupied on the partition where the PirateBox data are') ?>"><?= _('Maximum Space') ?></label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control txtslider" name="opt_maxspace" id="opt_maxspace" value="<?= htmlentities($opt_maxspace) ?>" data-slider-min="0" data-slider-max="100" data-slider-step="5" data-slider-value="<?= htmlentities($opt_maxspace) ?>" data-slider-orientation="horizontal" data-slider-selection="before" data-slider-tooltip="show" />
             </div>
           </div>
 

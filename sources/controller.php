@@ -74,6 +74,7 @@ dispatch('/', function() {
   set('wifi_device_id', $wifi_device_id);
   set('wifi_ssid', $wifi_ssid);
   set('wifi_ssid_list', $wifi_ssid_list);
+  set('opt_maxspace', ynh_setting_get('opt_maxspace'));
   set('opt_renaming', ynh_setting_get('opt_renaming'));
   set('opt_deleting', ynh_setting_get('opt_deleting'));
   set('opt_chat', ynh_setting_get('opt_chat'));
@@ -111,6 +112,7 @@ dispatch_put('/settings', function() {
   if($service_enabled == 1) {
     ynh_setting_set('opt_name', $_POST['opt_name']);
     ynh_setting_set('opt_renaming', isset($_POST['opt_renaming']) ? 1 : 0);
+    ynh_setting_set('opt_maxspace', $_POST['opt_maxspace']);
     ynh_setting_set('opt_deleting', isset($_POST['opt_deleting']) ? 1 : 0);
     ynh_setting_set('opt_chat', isset($_POST['opt_chat']) ? 1 : 0);
     ynh_setting_set('wifi_device_id', $_POST['wifi_device_id']);

@@ -60,6 +60,7 @@ if ! $upgrade; then
   sudo yunohost app setting piratebox opt_domain -v "${opt_domain}"
   sudo yunohost app setting piratebox opt_name -v "${opt_name}"
   sudo yunohost app setting piratebox opt_renaming -v "${opt_renaming}"
+  sudo yunohost app setting piratebox opt_maxspace -v 90
   sudo yunohost app setting piratebox opt_deleting -v "${opt_deleting}"
   sudo yunohost app setting piratebox opt_chat -v "${opt_chat}"
   sudo yunohost app setting piratebox wifi_device_id -v -1

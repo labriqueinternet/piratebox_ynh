@@ -23,6 +23,7 @@ $options = [
 
   'base_path'          => "<TPL:NGINX_REALPATH>",
   'base_uri'           => "/",
+  'max_space'          => <TPL:OPT_MAXSPACE>,
 
   'allow_renaming'     => <TPL:OPT_RENAMING>,
   'allow_deleting'     => <TPL:OPT_DELETING>,

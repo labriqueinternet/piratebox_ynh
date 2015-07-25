@@ -47,13 +47,27 @@ $(document).ready(function() {
     }
   });
 
+  function showSliders() {
+    $('#opt_maxspace').slider({
+      formater: function(value) {
+        return value + '%';
+      }
+    });
+  }
+
   $('#service_enabled').change(function() {
     if($('#service_enabled').parent().hasClass('off')) {
       $('.enabled').hide('slow');
     } else {
-      $('.enabled').show('slow');
+      $('.slider').hide();
+      $('.txtslider').hide();
+      $('.enabled').show('slow', showSliders);
     }
   });
+
+  if(!$('#service_enabled').parent().hasClass('off')) {
+    showSliders();
+  }
 
   $('.dropdown-menu li').click(function() {
     var menu = $(this).parent();

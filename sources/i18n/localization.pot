@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-07-25 10:54+0200\n"
+"POT-Creation-Date: 2015-07-25 13:10+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,20 +17,44 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: sources/views/layout.html.php:27 sources/views/settings.html.php:80
-#: sources/controller.php:102
+#: sources/controller.php:95
+msgid "The name cannot be empty"
+msgstr ""
+
+#: sources/controller.php:99
+msgid "You need to select an associated hotspot"
+msgstr ""
+
+#: sources/controller.php:103 sources/views/layout.html.php:27
+#: sources/views/settings.html.php:80
 msgid "PirateBox"
 msgstr ""
 
-#: sources/views/layout.html.php:49
+#: sources/controller.php:103
+msgid "configuration not updated"
+msgstr ""
+
+#: sources/controller.php:123
+msgid "Configuration updated and service successfully reloaded"
+msgstr ""
+
+#: sources/controller.php:125
+msgid "Configuration updated but service reload failed"
+msgstr ""
+
+#: sources/controller.php:129
+msgid "Service successfully disabled"
+msgstr ""
+
+#: sources/views/layout.html.php:51
 msgid "Error"
 msgstr ""
 
-#: sources/views/layout.html.php:54 sources/views/settings.html.php:60
+#: sources/views/layout.html.php:56 sources/views/settings.html.php:60
 msgid "Notice"
 msgstr ""
 
-#: sources/views/layout.html.php:66
+#: sources/views/layout.html.php:68
 msgid "Any problem? Contribute!"
 msgstr ""
 
@@ -84,45 +108,29 @@ msgid "Name"
 msgstr ""
 
 #: sources/views/settings.html.php:92
+msgid "Maximum space occupied on the partition where the PirateBox data are"
+msgstr ""
+
+#: sources/views/settings.html.php:92
+msgid "Maximum Space"
+msgstr ""
+
+#: sources/views/settings.html.php:99
 msgid "Renaming Allowed"
 msgstr ""
 
-#: sources/views/settings.html.php:101
+#: sources/views/settings.html.php:108
 msgid "Deleting Allowed"
 msgstr ""
 
-#: sources/views/settings.html.php:110
+#: sources/views/settings.html.php:117
 msgid "Chat Enabled"
 msgstr ""
 
-#: sources/views/settings.html.php:122
+#: sources/views/settings.html.php:129
 msgid "Reloading may take a few minutes. Be patient."
 msgstr ""
 
-#: sources/views/settings.html.php:122
+#: sources/views/settings.html.php:129
 msgid "Save and reload"
-msgstr ""
-
-#: sources/controller.php:94
-msgid "The name cannot be empty"
-msgstr ""
-
-#: sources/controller.php:98
-msgid "You need to select an associated hotspot"
-msgstr ""
-
-#: sources/controller.php:102
-msgid "configuration not updated"
-msgstr ""
-
-#: sources/controller.php:121
-msgid "Configuration updated and service successfully reloaded"
-msgstr ""
-
-#: sources/controller.php:123
-msgid "Configuration updated but service reload failed"
-msgstr ""
-
-#: sources/controller.php:127
-msgid "Service successfully disabled"
 msgstr ""
