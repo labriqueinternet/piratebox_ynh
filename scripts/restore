@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# The parameter $1 is the uncompressed restore directory location
+backup_dir="${1}/apps/piratebox"
+
+mkdir -p /var/www/piratebox/public/
+mv "${backup_dir}/uploads/" /var/www/piratebox/public/
+
+gitcommit=$(sudo yunohost app setting piratebox gitcommit)
+gitcommit_upstream=$(sudo yunohost app setting piratebox gitcommit_upstream)
+tmpdir=$(mktemp -dp /tmp/ piratebox-restore-XXXXX)
+
+git clone https://github.com/labriqueinternet/piratebox_ynh.git "${tmpdir}/"
+git --work-tree "${tmpdir}/" --git-dir "${tmpdir}/.git/" reset --hard "${gitcommit}"
+
+export PIRATEBOX_GITCOMMIT_UPSTREAM=$gitcommit_upstream
+cd "${tmpdir}/scripts/"
+./upgrade 
+
+sudo rm -r "${tmpdir}/"
+
+exit 0

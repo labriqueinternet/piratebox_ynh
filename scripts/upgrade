@@ -19,7 +19,7 @@ tmpdir=$(mktemp -dp /tmp/ piratebox-upgrade-XXXXX)
 sudo mv /var/www/piratebox/public/uploads/ "${tmpdir}/"
 
 export PIRATEBOX_UPGRADE=1
-sudo bash /etc/yunohost/apps/piratebox/scripts/remove
+sudo bash /etc/yunohost/apps/piratebox/scripts/remove &> /dev/null
 bash ./install "${domain}" "${path}" "${opt_domain}" "${opt_name}" "${opt_deleting}" "${opt_renaming}" "${opt_chat}"
 
 sudo mv "${tmpdir}/uploads/"* /var/www/piratebox/public/uploads/ 2> /dev/null

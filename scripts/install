@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # This is an upgrade?
-upgrade=$([ "$PIRATEBOX_UPGRADE" == 1 ] && echo true || echo false)
+upgrade=$([ "${PIRATEBOX_UPGRADE}" == 1 ] && echo true || echo false)
 
 # Retrieve arguments
 domain=${1}
@@ -54,7 +54,7 @@ if ! $upgrade; then
   if [ ! $? -eq 0 ]; then
     exit 1
   fi
-  
+
   # Save arguments
   sudo yunohost app setting piratebox service_enabled -v 0
   sudo yunohost app setting piratebox opt_domain -v "${opt_domain}"
@@ -66,6 +66,10 @@ if ! $upgrade; then
   sudo yunohost app setting piratebox wifi_device_id -v -1
 
 fi
+
+# Save git commit
+gitcommit=$(git rev-parse HEAD)
+sudo yunohost app setting piratebox gitcommit -v "${gitcommit}"
 
 # Install packages
 packages='php5-fpm iptables libnet-dns-perl git'
@@ -91,12 +95,19 @@ sudo install -b -o root -g root -m 0644 ../conf/phpfpm_captive-piratebox.conf /e
 # Copy web sources (piratebox)
 sudo git clone https://github.com/jvaubourg/php-piratebox.git /var/www/piratebox/
 
+if [ ! -z "${PIRATEBOX_GITCOMMIT_UPSTREAM}" ]; then
+  git --work-tree /var/www/piratebox/ --git-dir /var/www/piratebox/.git/ reset --hard "${PIRATEBOX_GITCOMMIT_UPSTREAM}"
+fi
+
 sudo chown -R root: /var/www/piratebox/
 sudo chmod -R 0644 /var/www/piratebox/
 sudo find /var/www/piratebox/ -type d -exec chmod +x {} \;
 
 sudo rm -f /var/www/piratebox/config.php
 sudo install -b -o root -g root -m 0644 ../conf/piratebox_config.php.tpl /var/www/piratebox/config.tpl.php
+
+gitcommit_upstream=$(git --work-tree /var/www/piratebox/ --git-dir /var/www/piratebox/.git/ rev-parse HEAD)
+sudo yunohost app setting piratebox gitcommit_upstream -v "${gitcommit_upstream}"
 
 # Copy web sources (admin)
 sudo mkdir -pm 0755 /var/www/piratebox_admin/
