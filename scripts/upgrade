@@ -15,7 +15,7 @@ opt_deleting=$(ynh_setting piratebox opt_deleting)
 opt_renaming=$(ynh_setting piratebox opt_renaming)
 opt_chat=$(ynh_setting piratebox opt_chat)
 
-tmpdir=$(mktemp -dp /tmp/ "${APP}-upgrade-XXXXX")
+tmpdir=$(mktemp -dp /tmp/ piratebox-upgrade-XXXXX)
 sudo mv /var/www/piratebox/public/uploads/ "${tmpdir}/"
 
 export PIRATEBOX_UPGRADE=1
