@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-07-08 19:58+0200\n"
+"POT-Creation-Date: 2015-07-25 10:54+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,6 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: sources/views/layout.html.php:27 sources/views/settings.html.php:80
+#: sources/controller.php:102
 msgid "PirateBox"
 msgstr ""
 
@@ -100,4 +101,28 @@ msgstr ""
 
 #: sources/views/settings.html.php:122
 msgid "Save and reload"
+msgstr ""
+
+#: sources/controller.php:94
+msgid "The name cannot be empty"
+msgstr ""
+
+#: sources/controller.php:98
+msgid "You need to select an associated hotspot"
+msgstr ""
+
+#: sources/controller.php:102
+msgid "configuration not updated"
+msgstr ""
+
+#: sources/controller.php:121
+msgid "Configuration updated and service successfully reloaded"
+msgstr ""
+
+#: sources/controller.php:123
+msgid "Configuration updated but service reload failed"
+msgstr ""
+
+#: sources/controller.php:127
+msgid "Service successfully disabled"
 msgstr ""

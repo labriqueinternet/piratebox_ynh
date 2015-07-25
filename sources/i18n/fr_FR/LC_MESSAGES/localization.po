@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: data 2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-07-08 19:58+0200\n"
-"PO-Revision-Date: 2015-07-09 00:09+0100\n"
+"POT-Creation-Date: 2015-07-25 10:54+0200\n"
+"PO-Revision-Date: 2015-07-25 10:57+0100\n"
 "Last-Translator: samy boutayeb <samy@langues-etcetera.fr>\n"
 "Language-Team: none\n"
 "Language: fr\n"
@@ -17,9 +17,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 1.7.7\n"
+"X-Generator: Poedit 1.6.10\n"
 
 #: sources/views/layout.html.php:27 sources/views/settings.html.php:80
+#: sources/controller.php:102
 msgid "PirateBox"
 msgstr "PirateBox"
 
@@ -33,23 +34,26 @@ msgstr "Notice"
 
 #: sources/views/layout.html.php:66
 msgid "Any problem? Contribute!"
-msgstr "Un souci ? Contribuez !"
+msgstr "Un problème ? Contribuez !"
 
 #: sources/views/settings.html.php:20
 msgid "PirateBox Configuration"
 msgstr "Configuration de la PirateBox"
 
 #: sources/views/settings.html.php:22 sources/views/settings.html.php:24
-msgid "This is a fast status. Click on More details to show the complete status."
-msgstr "Ceci est un rÃ©sumÃ© du statut. Cliquez sur Plus de dÃ©tails pour consulter l'intÃ©gralitÃ© du statut."
+msgid ""
+"This is a fast status. Click on More details to show the complete status."
+msgstr ""
+"Ceci est un résumé du statut. Cliquez sur « Plus de détails » pour consulter "
+"l'intégralité du statut."
 
 #: sources/views/settings.html.php:22
 msgid "Running"
-msgstr "En cours d'exÃ©cution"
+msgstr "En cours d'exécution"
 
 #: sources/views/settings.html.php:24
 msgid "Not Running"
-msgstr "Eteint"
+msgstr "Éteint"
 
 #: sources/views/settings.html.php:27
 msgid "Loading complete status may take a few minutes. Be patient."
@@ -57,7 +61,7 @@ msgstr "Le chargement du statut peut prendre quelques minutes. Soyez patient."
 
 #: sources/views/settings.html.php:27
 msgid "More details"
-msgstr "Plus de dÃ©tails"
+msgstr "Plus de détails"
 
 #: sources/views/settings.html.php:43
 msgid "Service"
@@ -65,15 +69,15 @@ msgstr "Service"
 
 #: sources/views/settings.html.php:48
 msgid "PirateBox Enabled"
-msgstr "PirateBox activÃ©e"
+msgstr "PirateBox activée"
 
 #: sources/views/settings.html.php:60
 msgid "You need to select an associated hotspot."
-msgstr "Choisissez un point d'accÃšs associÃ©."
+msgstr "Choisissez un point d'accès à associer."
 
 #: sources/views/settings.html.php:64
 msgid "Associated Hotspot"
-msgstr "Point d'accÃšs associÃ©"
+msgstr "Point d'accès associé"
 
 #: sources/views/settings.html.php:68
 msgid "None"
@@ -85,15 +89,15 @@ msgstr "Nom"
 
 #: sources/views/settings.html.php:92
 msgid "Renaming Allowed"
-msgstr "Renommer autorisÃ©"
+msgstr "Renommage autorisé"
 
 #: sources/views/settings.html.php:101
 msgid "Deleting Allowed"
-msgstr "SupprimÃ© autorisÃ©"
+msgstr "Suppression autorisée"
 
 #: sources/views/settings.html.php:110
 msgid "Chat Enabled"
-msgstr "Chat autorisÃ©"
+msgstr "Chat autorisé"
 
 #: sources/views/settings.html.php:122
 msgid "Reloading may take a few minutes. Be patient."
@@ -102,3 +106,27 @@ msgstr "Le rechargement peut prendre quelques minutes. Soyez patient."
 #: sources/views/settings.html.php:122
 msgid "Save and reload"
 msgstr "Sauvegarder et recharger"
+
+#: sources/controller.php:94
+msgid "The name cannot be empty"
+msgstr "Le nom ne peut pas être vide"
+
+#: sources/controller.php:98
+msgid "You need to select an associated hotspot"
+msgstr "Vous devez choisir un point d'accès à associer"
+
+#: sources/controller.php:102
+msgid "configuration not updated"
+msgstr "configuration non-mise à jour"
+
+#: sources/controller.php:121
+msgid "Configuration updated and service successfully reloaded"
+msgstr "Configuration mise à jour et service rechargé avec succès"
+
+#: sources/controller.php:123
+msgid "Configuration updated but service reload failed"
+msgstr "Configuration mise à jour mais le rechargement du service a échoué"
+
+#: sources/controller.php:127
+msgid "Service successfully disabled"
+msgstr "Service désactivé avec succès"
