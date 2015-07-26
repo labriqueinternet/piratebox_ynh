@@ -15,7 +15,7 @@ git --work-tree "${tmpdir}/" --git-dir "${tmpdir}/.git/" reset --hard "${gitcomm
 
 export PIRATEBOX_GITCOMMIT_UPSTREAM=$gitcommit_upstream
 cd "${tmpdir}/scripts/"
-./upgrade 
+bash ./upgrade 
 
 sudo rm -r "${tmpdir}/"
 

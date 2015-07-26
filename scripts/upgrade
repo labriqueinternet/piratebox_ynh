@@ -16,14 +16,22 @@ opt_renaming=$(ynh_setting piratebox opt_renaming)
 opt_chat=$(ynh_setting piratebox opt_chat)
 
 tmpdir=$(mktemp -dp /tmp/ piratebox-upgrade-XXXXX)
+sudo cp -a /etc/yunohost/apps/piratebox/settings.yml "${tmpdir}/"
 sudo mv /var/www/piratebox/public/uploads/ "${tmpdir}/"
 
 export PIRATEBOX_UPGRADE=1
 sudo bash /etc/yunohost/apps/piratebox/scripts/remove &> /dev/null
 bash ./install "${domain}" "${path}" "${opt_domain}" "${opt_name}" "${opt_deleting}" "${opt_renaming}" "${opt_chat}"
 
+gitcommit=$(ynh_setting piratebox gitcommit)
+gitcommit_upstream=$(ynh_setting piratebox gitcommit_upstream)
+
+sudo cp -a "${tmpdir}/settings.yml" /etc/yunohost/apps/piratebox/
 sudo mv "${tmpdir}/uploads/"* /var/www/piratebox/public/uploads/ 2> /dev/null
 sudo rm -r "${tmpdir}/"
+
+sudo yunohost app setting piratebox gitcommit -v "${gitcommit}"
+sudo yunohost app setting piratebox gitcommit_upstream -v "${gitcommit_upstream}"
 
 # Changes
 
