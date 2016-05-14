@@ -92,7 +92,7 @@ sudo install -b -o root -g root -m 0644 ../conf/phpfpm_captive-piratebox.conf /e
 sudo git clone https://github.com/jvaubourg/php-piratebox.git /var/www/piratebox/
 
 if [ ! -z "${PIRATEBOX_GITCOMMIT_UPSTREAM}" ]; then
-  git --work-tree /var/www/piratebox/ --git-dir /var/www/piratebox/.git/ reset --hard "${PIRATEBOX_GITCOMMIT_UPSTREAM}"
+  sudo git --work-tree /var/www/piratebox/ --git-dir /var/www/piratebox/.git/ reset --hard "${PIRATEBOX_GITCOMMIT_UPSTREAM}"
 fi
 
 sudo chown -R root: /var/www/piratebox/
