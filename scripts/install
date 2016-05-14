@@ -47,13 +47,13 @@ else
   opt_chat=0
 fi
 
-if ! $upgrade; then
+# Check domain/path availability
+sudo yunohost app checkurl ${domain}${url_path} -a piratebox
+if [ ! $? -eq 0 ]; then
+  exit 1
+fi
 
-  # Check domain/path availability
-  sudo yunohost app checkurl ${domain}${url_path} -a piratebox
-  if [ ! $? -eq 0 ]; then
-    exit 1
-  fi
+if ! $upgrade; then
 
   # Save arguments
   sudo yunohost app setting piratebox service_enabled -v 0
@@ -66,10 +66,6 @@ if ! $upgrade; then
   sudo yunohost app setting piratebox wifi_device_id -v -1
 
 fi
-
-# Save git commit
-gitcommit=$(git rev-parse HEAD)
-sudo yunohost app setting piratebox gitcommit -v "${gitcommit}"
 
 # Install packages
 packages='php5-fpm iptables libnet-dns-perl git'

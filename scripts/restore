@@ -6,7 +6,7 @@ backup_dir="${1}/apps/piratebox"
 mkdir -p /var/www/piratebox/public/
 mv "${backup_dir}/uploads/" /var/www/piratebox/public/
 
-gitcommit=$(sudo yunohost app setting piratebox gitcommit)
+gitcommit=$(sudo grep revision /etc/yunohost/apps/piratebox/status.json | sed 's/.*"revision": "\([^"]\+\)".*/\1/')
 gitcommit_upstream=$(sudo yunohost app setting piratebox gitcommit_upstream)
 tmpdir=$(mktemp -dp /tmp/ piratebox-restore-XXXXX)
 
