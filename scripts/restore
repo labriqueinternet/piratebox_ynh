@@ -3,8 +3,8 @@
 # The parameter $1 is the uncompressed restore directory location
 backup_dir="${1}/apps/piratebox"
 
-mkdir -p /var/www/piratebox/public/
-mv "${backup_dir}/uploads/" /var/www/piratebox/public/
+sudo mkdir -p /var/www/piratebox/public/
+sudo mv "${backup_dir}/uploads/" /var/www/piratebox/public/
 
 gitcommit=$(sudo grep revision /etc/yunohost/apps/piratebox/status.json | sed 's/.*"revision": "\([^"]\+\)".*/\1/')
 gitcommit_upstream=$(sudo yunohost app setting piratebox gitcommit_upstream)

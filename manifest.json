@@ -26,7 +26,7 @@
         "name": "path",
         "ask": {
             "en": "Choose a path for the web administration",
-            "fr": "Choissez un chemin pour l'administration web"
+            "fr": "Choisissez un chemin pour l'administration web"
         },
         "example": "/piratebox",
         "default": "/piratebox"
@@ -35,7 +35,7 @@
         "name": "opt_domain",
         "ask": {
             "en": "Choose a fake domain pour the PirateBox",
-            "fr": "Choissez un faux domaine pour la PirateBox"
+            "fr": "Choisissez un faux domaine pour la PirateBox"
         },
         "example": "share.box",
         "default": "share.box"
@@ -44,7 +44,7 @@
         "name": "opt_name",
         "ask": {
             "en": "Choose a name for the PirateBox",
-            "fr": "Choisir un nom pour la PirateBox"
+            "fr": "Choisissez un nom pour la PirateBox"
         },
         "example": "ShareBox",
         "default": "ShareBox"
