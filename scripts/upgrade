@@ -7,6 +7,8 @@ ynh_setting() {
   sudo grep "^${setting}:" "/etc/yunohost/apps/${app}/settings.yml" | sed s/^[^:]\\+:\\s*[\"\']\\?// | sed s/\\s*[\"\']\$//
 }
 
+source ./helpers
+
 domain=$(ynh_setting piratebox domain)
 path=$(ynh_setting piratebox path)
 opt_domain=$(ynh_setting piratebox opt_domain)
@@ -37,6 +39,6 @@ if [ -z "$(ynh_setting piratebox opt_maxspace)" ]; then
   sudo yunohost app setting piratebox opt_maxspace -v 90
 fi
 
-sudo systemctl start ynh-piratebox
+ynh_systemctl start ynh-piratebox
 
 exit 0

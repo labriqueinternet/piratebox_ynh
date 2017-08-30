@@ -20,6 +20,10 @@
 # This is an upgrade?
 upgrade=$([ "${PIRATEBOX_UPGRADE}" == 1 ] && echo true || echo false)
 
+if ! $upgrade; then
+  source ./helpers
+fi
+
 # Retrieve arguments
 domain=${1}
 url_path=${2}
@@ -48,10 +52,7 @@ else
 fi
 
 # Check domain/path availability
-sudo yunohost app checkurl ${domain}${url_path} -a piratebox
-if [ ! $? -eq 0 ]; then
-  exit 1
-fi
+ynh_webpath_register piratebox $domain $url_path || exit 1
 
 if ! $upgrade; then
 
@@ -167,7 +168,7 @@ sudo systemctl enable ynh-piratebox
 sudo yunohost service add ynh-piratebox
 
 if ! $upgrade; then
-  sudo systemctl start ynh-piratebox
+  ynh_systemctl start ynh-piratebox
 
   echo "WARNING: PirateBox is not started because you need to define an associated wifi hotspot through the web admin" >&2
 fi

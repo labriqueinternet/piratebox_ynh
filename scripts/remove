@@ -17,11 +17,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+source ./helpers
+
 # Retrieve arguments
 domain=$(sudo yunohost app setting piratebox domain)
 
 # The End
-sudo systemctl stop ynh-piratebox
+ynh_systemctl stop ynh-piratebox
 sudo systemctl disable ynh-piratebox
 sudo yunohost service remove ynh-piratebox
 sudo rm -f /etc/systemd/system/ynh-piratebox.service /usr/local/bin/ynh-piratebox
