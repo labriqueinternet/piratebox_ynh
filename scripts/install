@@ -88,8 +88,9 @@ ynh_app_setting_set --app=$app --key=opt_renaming --value=$opt_renaming
 ynh_app_setting_set --app=$app --key=opt_maxspace --value=90
 ynh_app_setting_set --app=$app --key=opt_deleting --value=$opt_deleting
 ynh_app_setting_set --app=$app --key=opt_chat --value=$opt_chat
-# Temp, waiting for: https://github.com/YunoHost/yunohost/pull/752
-ynh_app_setting_set --app=$app --key=wifi_device_id --value="\-1"
+
+# For now, there is a bug with getops /o\
+yunohost app setting $app wifi_device_id -v -1
 
 #=================================================
 # STANDARD MODIFICATIONS
