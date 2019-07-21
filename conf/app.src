@@ -1,0 +1,6 @@
+SOURCE_URL=https://github.com/jvaubourg/php-piratebox/archive/d9cc1a57b9b99a0e4d63d0e518193f70876b221d.tar.gz
+SOURCE_SUM=b0ea33b5d748f61b7e229866336ea2dfa89bd4505aea7edc54c053df09a36d6a
+SOURCE_SUM_PRG=sha256sum
+SOURCE_FORMAT=tar.gz
+SOURCE_IN_SUBDIR=true
+SOURCE_FILENAME=

@@ -19,9 +19,7 @@
  */
 
 function ynh_setting_get($setting, $app = 'piratebox') {
-  $value = exec("sudo grep \"^$setting:\" /etc/yunohost/apps/$app/settings.yml");
-  $value = preg_replace('/^[^:]+:\s*["\']?/', '', $value);
-  $value = preg_replace('/\s*["\']$/', '', $value);
+  $value = exec("sudo yunohost app setting $app $setting");
 
   return htmlspecialchars($value);
 }

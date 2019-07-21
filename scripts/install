@@ -17,162 +17,252 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# This is an upgrade?
-upgrade=$([ "${PIRATEBOX_UPGRADE}" == 1 ] && echo true || echo false)
+#=================================================
+# GENERIC START
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
 
-if ! $upgrade; then
-  source ./helpers
+source _common.sh
+source /usr/share/yunohost/helpers
+
+#=================================================
+# MANAGE SCRIPT FAILURE
+#=================================================
+
+ynh_clean_setup () {
+	### Remove this function if there's nothing to clean before calling the remove script.
+	true
+}
+# Exit if an error occurs during the execution of the script
+ynh_abort_if_errors
+
+#=================================================
+# RETRIEVE ARGUMENTS FROM THE MANIFEST
+#=================================================
+
+domain=$YNH_APP_ARG_DOMAIN
+path_url=$YNH_APP_ARG_PATH
+opt_domain=$YNH_APP_ARG_OPT_DOMAIN
+opt_name=$YNH_APP_ARG_OPT_NAME
+opt_deleting=$YNH_APP_ARG_OPT_DELETING
+opt_renaming=$YNH_APP_ARG_OPT_RENAMING
+opt_chat=$YNH_APP_ARG_OPT_CHAT
+
+#admin=$YNH_APP_ARG_ADMIN
+
+app=$YNH_APP_INSTANCE_NAME
+
+#=================================================
+# CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
+#=================================================
+ynh_script_progression --message="Validating installation parameters..." --time --weight=1
+
+final_path=/var/www/$app
+final_path_admin=/var/www/"$app"_admin
+final_path_tmp=/var/spool/$app
+test ! -e "$final_path" || ynh_die --message="This path $final_path already contains a folder"
+test ! -e "$final_path_admin" || ynh_die --message="This path $final_path_admin already contains a folder"
+test ! -e "$final_path_tmp" || ynh_die --message="This path $final_path_tmp already contains a folder"
+
+if ! yunohost app list --installed | grep -q "hotspot";
+then
+	ynh_die --message="Please install https://github.com/labriqueinternet/hotspot_ynh before"
 fi
 
-# Retrieve arguments
-domain=${1}
-url_path=${2}
-opt_domain=${3}
-opt_name=${4}
-opt_deleting=${5}
-opt_renaming=${6}
-opt_chat=${7}
 
-if [ "${opt_deleting}" == yes ]; then
-  opt_deleting=1
-else
-  opt_deleting=0
-fi
+# Register (book) web path
+ynh_webpath_register --app=$app --domain=$domain --path_url=$path_url
 
-if [ "${opt_renaming}" == yes ]; then
-  opt_renaming=1
-else
-  opt_renaming=0
-fi
+#=================================================
+# STORE SETTINGS FROM MANIFEST
+#=================================================
+ynh_script_progression --message="Storing installation settings..." --time --weight=1
 
-if [ "${opt_chat}" == yes ]; then
-  opt_chat=1
-else
-  opt_chat=0
-fi
+ynh_app_setting_set --app=$app --key=domain --value=$domain
+ynh_app_setting_set --app=$app --key=path --value=$path_url
+ynh_app_setting_set --app=$app --key=service_enabled --value=0
+ynh_app_setting_set --app=$app --key=opt_domain --value=$opt_domain
+ynh_app_setting_set --app=$app --key=opt_name --value=$opt_name
+ynh_app_setting_set --app=$app --key=opt_renaming --value=$opt_renaming
+ynh_app_setting_set --app=$app --key=opt_maxspace --value=90
+ynh_app_setting_set --app=$app --key=opt_deleting --value=$opt_deleting
+ynh_app_setting_set --app=$app --key=opt_chat --value=$opt_chat
+# Temp, waiting for: https://github.com/YunoHost/yunohost/pull/752
+ynh_app_setting_set --app=$app --key=wifi_device_id --value="\-1"
 
-# Check domain/path availability
-ynh_webpath_register piratebox $domain $url_path || exit 1
+#=================================================
+# STANDARD MODIFICATIONS
+#=================================================
+# FIND AND OPEN A PORT
+#=================================================
+ynh_script_progression --message="Configuring firewall..." --time --weight=1
 
-if ! $upgrade; then
+# Find a free port
+dns_port=$(ynh_find_port --port=4253)
+web_port=$(ynh_find_port --port=4280)
+# Open this port
+ynh_exec_warn_less yunohost firewall allow --no-upnp UDP $dns_port
+ynh_app_setting_set --app=$app --key=dns_port --value=$dns_port
 
-  # Save arguments
-  sudo yunohost app setting piratebox service_enabled -v 0
-  sudo yunohost app setting piratebox opt_domain -v "${opt_domain}"
-  sudo yunohost app setting piratebox opt_name -v "${opt_name}"
-  sudo yunohost app setting piratebox opt_renaming -v "${opt_renaming}"
-  sudo yunohost app setting piratebox opt_maxspace -v 90
-  sudo yunohost app setting piratebox opt_deleting -v "${opt_deleting}"
-  sudo yunohost app setting piratebox opt_chat -v "${opt_chat}"
-  sudo yunohost app setting piratebox wifi_device_id -v -1
+ynh_exec_warn_less yunohost firewall allow --no-upnp TCP $web_port
+ynh_app_setting_set --app=$app --key=web_port --value=$web_port
 
-fi
+#=================================================
+# INSTALL DEPENDENCIES
+#=================================================
+ynh_script_progression --message="Installing dependencies..." --time --weight=1
 
-# Install packages
-packages='php5-fpm iptables libnet-dns-perl git'
-export DEBIAN_FRONTEND=noninteractive
+ynh_install_app_dependencies $pkg_dependencies
 
-sudo apt-get --assume-yes --force-yes install ${packages}
+#=================================================
+# DOWNLOAD, CHECK AND UNPACK SOURCE
+#=================================================
+ynh_script_progression --message="Setting up source files..." --time --weight=1
 
-if [ $? -ne 0 ]; then
-  sudo apt-get update
-  sudo apt-get --assume-yes --force-yes install ${packages}
-fi
-
-# Copy confs
-sudo mkdir -pm 0755 /var/log/nginx/
-sudo mkdir -pm 0755 /var/spool/piratebox/
-sudo chown www-data: /var/spool/piratebox/
-
-sudo install -b -o root -g root -m 0644 ../conf/nginx_captive-piratebox.conf /etc/nginx/captive-piratebox.conf
-sudo install -b -o root -g root -m 0644 ../conf/nginx_piratebox.conf "/etc/nginx/conf.d/${domain}.d/piratebox.conf"
-sudo install -b -o root -g root -m 0644 ../conf/phpfpm_piratebox.conf /etc/php5/fpm/pool.d/piratebox.conf
-sudo install -b -o root -g root -m 0644 ../conf/phpfpm_captive-piratebox.conf /etc/php5/fpm/pool.d/captive-piratebox.conf
-
-# Copy web sources (piratebox)
-sudo git clone https://github.com/jvaubourg/php-piratebox.git /var/www/piratebox/
-
-if [ ! -z "${PIRATEBOX_GITCOMMIT_UPSTREAM}" ]; then
-  sudo git --work-tree /var/www/piratebox/ --git-dir /var/www/piratebox/.git/ reset --hard "${PIRATEBOX_GITCOMMIT_UPSTREAM}"
-fi
-
-sudo chown -R root: /var/www/piratebox/
-sudo chmod -R 0644 /var/www/piratebox/
-sudo find /var/www/piratebox/ -type d -exec chmod +x {} \;
-
-sudo rm -f /var/www/piratebox/config.php
-sudo install -b -o root -g root -m 0644 ../conf/piratebox_config.php.tpl /var/www/piratebox/config.tpl.php
-
-gitcommit_upstream=$(git --work-tree /var/www/piratebox/ --git-dir /var/www/piratebox/.git/ rev-parse HEAD)
-sudo yunohost app setting piratebox gitcommit_upstream -v "${gitcommit_upstream}"
+ynh_app_setting_set --app=$app --key=final_path --value=$final_path
+ynh_app_setting_set --app=$app --key=final_path_admin --value=$final_path_admin
+ynh_app_setting_set --app=$app --key=final_path_tmp --value=$final_path_tmp
+# Download, check integrity, uncompress and patch the source from app.src
+ynh_setup_source --dest_dir="$final_path"
 
 # Copy web sources (admin)
-sudo mkdir -pm 0755 /var/www/piratebox_admin/
-sudo cp -a ../sources/* /var/www/piratebox_admin/
+mkdir -pm 0755 $final_path_admin
+cp -a ../sources/* $final_path_admin/
 
-sudo chown -R root: /var/www/piratebox_admin/
-sudo chmod -R 0644 /var/www/piratebox_admin/*
-sudo find /var/www/piratebox_admin/ -type d -exec chmod +x {} \;
-
-# Fix permissions
-sudo chown -R www-data: /var/www/piratebox/public/uploads/
-sudo chown -R www-data: /var/www/piratebox/public/chat/
-
-# Fix php-piratebox configuration
-sudo sed 's|<TPL:NGINX_REALPATH>|/var/www/piratebox/|g' -i /var/www/piratebox/config.tpl.php
-
-# Fix confs
-## nginx captive portal
-sudo sed "s|<TPL:DOMAIN>|${opt_domain}|g" -i /etc/nginx/captive-piratebox.conf
-sudo sed 's|<TPL:NGINX_REALPATH>|/var/www/piratebox/|g' -i /etc/nginx/captive-piratebox.conf
-sudo sed 's|<TPL:PHP_NAME>|piratebox|g' -i /etc/nginx/captive-piratebox.conf
-
-## nginx admin
-sudo sed "s|<TPL:NGINX_LOCATION>|${url_path}|g" -i "/etc/nginx/conf.d/${domain}.d/piratebox.conf"
-sudo sed 's|<TPL:NGINX_REALPATH>|/var/www/piratebox_admin/|g' -i "/etc/nginx/conf.d/${domain}.d/piratebox.conf"
-sudo sed 's|<TPL:PHP_NAME>|piratebox_admin|g' -i "/etc/nginx/conf.d/${domain}.d/piratebox.conf"
-
-## php-fpm captive portal
-sudo sed 's|<TPL:PHP_NAME>|piratebox|g' -i /etc/php5/fpm/pool.d/captive-piratebox.conf
-sudo sed 's|<TPL:PHP_USER>|www-data|g' -i /etc/php5/fpm/pool.d/captive-piratebox.conf
-sudo sed 's|<TPL:PHP_GROUP>|www-data|g' -i /etc/php5/fpm/pool.d/captive-piratebox.conf
-sudo sed 's|<TPL:NGINX_REALPATH>|/var/www/piratebox/|g' -i /etc/php5/fpm/pool.d/captive-piratebox.conf
-
-## php-fpm admin
-sudo sed 's|<TPL:PHP_NAME>|piratebox_admin|g' -i /etc/php5/fpm/pool.d/piratebox.conf
-sudo sed 's|<TPL:PHP_USER>|admin|g' -i /etc/php5/fpm/pool.d/piratebox.conf
-sudo sed 's|<TPL:PHP_GROUP>|admins|g' -i /etc/php5/fpm/pool.d/piratebox.conf
-sudo sed 's|<TPL:NGINX_REALPATH>|/var/www/piratebox_admin/|g' -i /etc/php5/fpm/pool.d/piratebox.conf
-
-# Fix sources
-sudo sed "s|<TPL:NGINX_LOCATION>|${url_path}|g" -i /var/www/piratebox_admin/config.php
+mkdir -pm 0755 $final_path_tmp
 
 # Install fakedns
-sudo install -o root -g root -m 0755 ../conf/piratebox_fakedns /usr/local/bin/
+install -o root -g root -m 0755 ../conf/piratebox_fakedns /usr/local/bin/
 
 # Copy init script
-sudo install -o root -g root -m 0755 ../conf/ynh-piratebox /usr/local/bin/
-sudo install -o root -g root -m 0644 ../conf/ynh-piratebox.service /etc/systemd/system/
+install -o root -g root -m 0755 ../conf/ynh-piratebox /usr/local/bin/
 
-# Update firewall
-sudo yunohost firewall allow --no-upnp UDP 4253
-sudo yunohost firewall allow --no-upnp TCP 4280
+#=================================================
+# NGINX CONFIGURATION
+#=================================================
+ynh_script_progression --message="Configuring nginx web server..." --time --weight=1
 
-# Set default inits
-sudo systemctl enable php5-fpm
-sudo systemctl restart php5-fpm
+# Create a dedicated nginx config for the admin portal
+ynh_add_nginx_config final_path_admin
 
-sudo systemctl reload nginx
+# nginx captive portal
+install -b -o root -g root -m 0644 ../conf/nginx_captive-piratebox.conf /etc/nginx/captive-piratebox.conf
 
-sudo systemctl enable ynh-piratebox
-sudo yunohost service add ynh-piratebox
+ynh_replace_string --match_string="__DOMAIN__" --replace_string="$opt_domain" --target_file="/etc/nginx/captive-piratebox.conf"
+ynh_replace_string --match_string="__FINAL_PATH__" --replace_string="$final_path" --target_file="/etc/nginx/captive-piratebox.conf"
+ynh_replace_string --match_string="__NAME__" --replace_string="$app" --target_file="/etc/nginx/captive-piratebox.conf"
 
-if ! $upgrade; then
-  ynh_systemctl start ynh-piratebox
+#=================================================
+# CREATE DEDICATED USER
+#=================================================
+ynh_script_progression --message="Configuring system user..." --time --weight=1
 
-  echo "WARNING: PirateBox is not started because you need to define an associated wifi hotspot through the web admin" >&2
-fi
+# Create a system user
+ynh_system_user_create --username=$app
 
-sudo yunohost app ssowatconf
+# Ensure the system user has enough sudo permissions
+install -b -o root -g root -m 0440 ../conf/sudoers.conf /etc/sudoers.d/${app}_ynh
+ynh_replace_string "__PIRATEBOX_SYSUSER__" "${app}" /etc/sudoers.d/${app}_ynh
 
-exit 0
+#=================================================
+# PHP-FPM CONFIGURATION
+#=================================================
+ynh_script_progression --message="Configuring php-fpm..." --time --weight=1
+
+# Create a dedicated php-fpm config for the admin panel
+tmp_final_path=$final_path
+final_path=$final_path_admin
+ynh_add_fpm_config
+
+final_path=$tmp_final_path
+
+install -b -o root -g root -m 0644 ../conf/phpfpm_captive-piratebox.conf /etc/php/7.0/fpm/pool.d/captive-piratebox.conf
+
+ynh_replace_string --match_string="__NAMETOCHANGE__" --replace_string="$app" --target_file="/etc/php/7.0/fpm/pool.d/captive-piratebox.conf"
+ynh_replace_string --match_string="__FINALPATH__" --replace_string="$final_path" --target_file="/etc/php/7.0/fpm/pool.d/captive-piratebox.conf"
+ynh_replace_string --match_string="__USER__" --replace_string="$app" --target_file="/etc/php/7.0/fpm/pool.d/captive-piratebox.conf"
+ynh_replace_string --match_string="__PHPVERSION__" --replace_string="$7.0" --target_file="/etc/php/7.0/fpm/pool.d/captive-piratebox.conf"
+
+#=================================================
+# SPECIFIC SETUP
+#=================================================
+# SETUP SYSTEMD
+#=================================================
+ynh_script_progression --message="Configuring a systemd service..." --time --weight=1
+
+# Create a dedicated systemd config
+ynh_add_systemd_config
+
+#=================================================
+# MODIFY A CONFIG FILE
+#=================================================
+
+install -b -o root -g root -m 0644 ../conf/piratebox_config.php.tpl $final_path/config.tpl.php
+
+# Fix php-piratebox configuration
+ynh_replace_string --match_string="<TPL:NGINX_REALPATH>" --replace_string="$final_path" --target_file="$final_path/config.tpl.php"
+
+# Fix sources
+ynh_replace_string --match_string="__PATH__" --replace_string="$path_url" --target_file="$final_path_admin/config.php"
+
+#=================================================
+# STORE THE CONFIG FILE CHECKSUM
+#=================================================
+
+# Calculate and store the config file checksum into the app settings
+ynh_store_file_checksum --file="$final_path/config.tpl.php"
+ynh_store_file_checksum --file="$final_path_admin/config.php"
+
+#=================================================
+# GENERIC FINALIZATION
+#=================================================
+# SECURE FILES AND DIRECTORIES
+#=================================================
+
+# Set permissions to app files
+chown -R root: $final_path
+
+chown www-data: $final_path_tmp
+
+chmod -R 0644 $final_path
+find $final_path -type d -exec chmod +x {} \;
+
+
+sudo chown -R root: $final_path_admin
+sudo chmod -R 0644 $final_path_admin/*
+sudo find $final_path_admin/ -type d -exec chmod +x {} \;
+
+# Fix permissions
+sudo chown -R www-data: $final_path/public/uploads/
+sudo chown -R www-data: $final_path/public/chat/
+
+#=================================================
+# ADVERTISE SERVICE IN ADMIN PANEL
+#=================================================
+
+yunohost service add $app --log "/var/log/$app/$app.log"
+
+#=================================================
+# START SYSTEMD SERVICE
+#=================================================
+ynh_script_progression --message="Starting a systemd service..." --time --weight=1
+
+# Start a systemd service
+ynh_systemd_action --service_name=$app --action="start"
+
+ynh_print_warn --message="PirateBox is not started because you need to define an associated wifi hotspot through the web admin"
+
+#=================================================
+# RELOAD NGINX
+#=================================================
+ynh_script_progression --message="Reloading nginx web server and php7.0-fpm..." --time --weight=1
+
+ynh_systemd_action --service_name=nginx --action=reload
+ynh_systemd_action --service_name=php7.0-fpm --action=restart
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression --message="Installation of $app completed" --time --last

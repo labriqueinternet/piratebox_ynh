@@ -11,11 +11,19 @@
     "email": "julien@vaubourg.com",
     "url": "http://julien.vaubourg.com"
   },
-  "multi_instance": "false",
+  "requirements": {
+      "yunohost": ">= 3.5"
+  },
+  "multi_instance": false,
+  "services": [
+      "nginx",
+      "php7.0-fpm"
+  ],
   "arguments": {
     "install" : [
       {
         "name": "domain",
+        "type": "domain",
         "ask": {
             "en": "Choose a domain for the web administration",
             "fr": "Choisissez un domaine pour l'administration web"
@@ -24,6 +32,7 @@
       },
       {
         "name": "path",
+        "type": "path",
         "ask": {
             "en": "Choose a path for the web administration",
             "fr": "Choisissez un chemin pour l'administration web"
@@ -33,6 +42,7 @@
       },
       {
         "name": "opt_domain",
+        "type": "string",
         "ask": {
             "en": "Choose a fake domain pour the PirateBox",
             "fr": "Choisissez un faux domaine pour la PirateBox"
@@ -42,6 +52,7 @@
       },
       {
         "name": "opt_name",
+        "type": "string",
         "ask": {
             "en": "Choose a name for the PirateBox",
             "fr": "Choisissez un nom pour la PirateBox"
@@ -51,30 +62,30 @@
       },
       {
         "name": "opt_deleting",
+        "type": "boolean",
         "ask": {
             "en": "Can users delete files? (yes/no)",
             "fr": "Les utilisateurs peuvent-ils supprimer des fichiers ? (yes/no)"
         },
-        "example": "yes",
-        "default": "yes"
+        "default": true
       },
       {
         "name": "opt_renaming",
+        "type": "boolean",
         "ask": {
             "en": "Can users rename files? (yes/no)",
             "fr": "Les utilisateurs peuvent-ils renommer des fichiers ? (yes/no)"
         },
-        "example": "yes",
-        "default": "yes"
+        "default": true
       },
       {
         "name": "opt_chat",
+        "type": "boolean",
         "ask": {
             "en": "Enable the chat? (yes/no)",
             "fr": "Activer le chat ? (yes/no)"
         },
-        "example": "yes",
-        "default": "yes"
+        "default": true
       }
     ]
   }
