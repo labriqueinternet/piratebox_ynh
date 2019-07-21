@@ -250,7 +250,7 @@ yunohost service add $app --log "/var/log/$app/$app.log"
 ynh_script_progression --message="Starting a systemd service..." --time --weight=1
 
 # Start a systemd service
-ynh_systemd_action --service_name=$app --action="start"
+#ynh_systemd_action --service_name=$app --action="start"
 
 ynh_print_warn --message="PirateBox is not started because you need to define an associated wifi hotspot through the web admin"
 
